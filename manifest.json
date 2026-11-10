@@ -1,13 +1,23 @@
 {
-  "background_color": "#0a0a0a",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "Vetorial Tech Dev Center",
-  "orientation": "any",
-  "scope": "/",
   "short_name": "Vetorial Dev",
-  "start_url": "/",
-  "theme_color": "#d4af37",
+  "name": "Vetorial Tech Dev Center",
   "description": "Central de Comando e Roadmap da Vetorial Tech",
-  "id": "com.vetorialtech.devcenter"
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1006/1006771.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1006/1006771.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "id": "com.vetorialtech.devcenter",
+  "start_url": "./",
+  "background_color": "#0a0a0a",
+  "theme_color": "#d4af37",
+  "display": "standalone",
+  "orientation": "any"
 }
