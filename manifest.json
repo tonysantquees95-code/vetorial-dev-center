@@ -1,0 +1,13 @@
+{
+  "background_color": "#0a0a0a",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Vetorial Tech Dev Center",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Vetorial Dev",
+  "start_url": "/",
+  "theme_color": "#d4af37",
+  "description": "Central de Comando e Roadmap da Vetorial Tech",
+  "id": "com.vetorialtech.devcenter"
+}
