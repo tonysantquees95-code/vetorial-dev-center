@@ -4,6 +4,7 @@ import { Ajustes } from "./telas/Ajustes";
 import { AvisoDeAtualizacao } from "./telas/Aplicativos";
 import { SeletorDeAmbiente } from "./telas/Ambiente";
 import { Bi } from "./telas/Bi";
+import { Cofre } from "./telas/Cofre";
 import { Dispositivos } from "./telas/Dispositivos";
 import { Ferramentas } from "./telas/Ferramentas";
 import { Login } from "./telas/Login";
@@ -40,6 +41,7 @@ const ABAS = [
   { id: "ferramentas", rotulo: "Funções", icone: "chip", tela: Ferramentas },
   { id: "trafego", rotulo: "Tráfego", icone: "pulso", tela: Trafego },
   { id: "dispositivos", rotulo: "Aparelhos", icone: "celular", tela: Dispositivos },
+  { id: "cofre", rotulo: "Cofre", icone: "cadeado", tela: Cofre },
   { id: "ajustes", rotulo: "Ajustes", icone: "engrenagem", tela: Ajustes }
 ] as const;
 type Id = (typeof ABAS)[number]["id"];
@@ -83,7 +85,7 @@ export function App() {
           <Atual />
         </main>
       </div>
-      <nav aria-label="Seções" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-[repeat(6,minmax(0,1fr))] border-t border-borda bg-fundo/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav aria-label="Seções" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-[repeat(7,minmax(0,1fr))] border-t border-borda bg-fundo/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         {ABAS.map((a) => (
           <button key={a.id} onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined} className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 text-[10px] ${aba === a.id ? "text-ciano" : "text-suave"}`}><Icone nome={a.icone} tam={21} />{a.rotulo}</button>
         ))}

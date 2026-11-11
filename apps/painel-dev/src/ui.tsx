@@ -14,6 +14,7 @@ const CAMINHOS: Record<string, string> = {
   atualizar: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7",
   sair: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
   mais: "M12 5v14M5 12h14",
+  cadeado: "M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3",
   lixeira: "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"
 };
 export function Icone({ nome, tam = 20 }: { nome: string; tam?: number }) {

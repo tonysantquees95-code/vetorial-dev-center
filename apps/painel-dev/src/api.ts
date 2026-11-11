@@ -42,6 +42,9 @@ export interface Dispositivos { agora: number; maxDispositivos: number; maxAtiva
 export interface ConfigDev { escutaContinua: boolean; provedores: Record<string, { ligado: boolean; chaveConfigurada: boolean }>; repos: { vindex: string; vortex: string } }
 export interface EstadoCache { exato: boolean; semantico: boolean; acertos24h: number; chamadas24h: number; taxa: number }
 export interface Telemetria { origem: string; atualizado: number; bateria: { nivel: number | null; carregando: boolean; temperatura: number | null }; hardware: { modelo: string; so: string; ramMb: number | null; nucleos: number | null; armazenamentoLivreMb: number | null; rede: string } }
+export interface ChaveCofre { nome: string; rotulo: string; noCofre: boolean; previa: string; atualizado: number; noServidor: boolean }
+export interface EstadoCofre { configurado: boolean; bloqueadoAte: number; sugeridas: { nome: string; rotulo: string }[] }
+export interface ListaCofre { chaves: ChaveCofre[]; historico: { quando: number; acao: string; nome: string; ok: number }[] }
 export interface SessaoAdmin { token: string; papel: string; expira: number; sessao: string; usuario: { id: string; email: string; nome: string } }
 
 // ------------------------------------------------------------------ armazenamento local (por ambiente)
@@ -120,6 +123,12 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     encerrarSessao: (id: string) => chamar<{ ok: boolean }>("POST", `/dev/sessoes/${id}/encerrar`, {}),
+    cofreEstado: () => chamar<EstadoCofre>("GET", "/dev/cofre/estado"),
+    cofreIniciar: (senha: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/iniciar", { senha }),
+    cofreListar: (senha: string) => chamar<ListaCofre>("POST", "/dev/cofre/listar", { senha }),
+    cofreGuardar: (senha: string, nome: string, valor: string) => chamar<{ ok: boolean; previa: string }>("POST", "/dev/cofre/guardar", { senha, nome, valor }),
+    cofreApagar: (senha: string, nome: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/apagar", { senha, nome }),
+    cofreTrocarSenha: (senha: string, nova: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/trocar-senha", { senha, nova }),
     apk: (app: string) => chamar<{ app: string; numero: number; tag: string; tamanho: number; url: string }>("GET", `/dev/apk?app=${encodeURIComponent(app)}`),
     config: () => chamar<ConfigDev>("GET", "/dev/config"),
     definirConfig: (chave: string, valor: string | boolean) => chamar<{ ok: boolean }>("PUT", "/dev/config", { chave, valor }),
