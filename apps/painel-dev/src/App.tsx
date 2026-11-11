@@ -40,7 +40,7 @@ export function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[1400px]">
       <aside className="sticky top-0 hidden h-dvh w-56 flex-none flex-col gap-1 border-r border-borda p-4 md:flex">
-        <div className="mb-4 flex items-center gap-2"><img src="/icons/pwa-192.png" alt="" width={36} height={36} className="rounded-xl" /><div><div className="text-sm font-semibold leading-tight">Painel Dev</div><div className="text-[11px] text-suave">Vetorial Tech</div></div></div>
+        <div className="mb-4 flex items-center gap-2"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={36} height={36} className="rounded-xl" /><div><div className="text-sm font-semibold leading-tight">Painel Dev</div><div className="text-[11px] text-suave">Vetorial Tech</div></div></div>
         {ABAS.map((a) => (
           <button key={a.id} onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition ${aba === a.id ? "bg-ciano/15 text-ciano" : "text-suave hover:bg-white/5"}`}><Icone nome={a.icone} />{a.rotulo}</button>
         ))}
