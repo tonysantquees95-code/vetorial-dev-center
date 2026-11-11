@@ -44,7 +44,7 @@ export function Login() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-4 px-4 py-8">
       <div className="text-center">
-        <img src={`${import.meta.env.BASE_URL}icons/logo-vetorial.jpg`} alt="Vetorial Tech: sempre um passo à frente" className="mx-auto w-full max-w-xs rounded-2xl" />
+        <img src={`${import.meta.env.BASE_URL}icons/logo-vetorial.png`} alt="Vetorial Tech: sempre um passo à frente" className="mx-auto w-full max-w-[16rem] rounded-3xl" />
         <h1 className="mt-3 text-2xl font-semibold">Painel Dev</h1>
         <p className="text-sm text-suave">Vetorial Tech · acesso do administrador</p>
       </div>
