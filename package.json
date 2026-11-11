@@ -1,0 +1,21 @@
+{
+  "name": "vetorial-dev-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vetorial Dev Center: Painel Dev da Vetorial Tech (administrador). Web/PWA e APK Dev.",
+  "license": "UNLICENSED",
+  "packageManager": "npm@10.9.0",
+  "engines": { "node": ">=22" },
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w @venus/painel-dev",
+    "build": "npm run build:web -w @venus/painel-dev",
+    "build:apk": "npm run build:apk -w @venus/painel-dev",
+    "apk:debug": "npm run apk:debug -w @venus/painel-dev",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w @venus/painel-dev",
+    "chaves": "node scripts/varrer-chaves.mjs",
+    "verificar": "npm run chaves && npm run test && npm run typecheck && npm run build"
+  },
+  "devDependencies": { "typescript": "^5.7.0" }
+}

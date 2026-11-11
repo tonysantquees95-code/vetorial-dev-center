@@ -1,0 +1,37 @@
+{
+  "name": "@venus/painel-dev",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:web": "tsc -p tsconfig.json && vite build",
+    "build:apk": "tsc -p tsconfig.json && vite build --mode capacitor && cap sync android",
+    "android:add": "vite build --mode capacitor && cap add android && capacitor-assets generate --android --iconBackgroundColor '#070B14' --iconBackgroundColorDark '#070B14' --splashBackgroundColor '#070B14' --splashBackgroundColorDark '#070B14'",
+    "apk:debug": "npm run build:apk && cd android && ./gradlew assembleDebug",
+    "apk:release": "npm run build:apk && cd android && ./gradlew assembleRelease",
+    "typecheck": "tsc -p tsconfig.json",
+    "preview": "vite preview",
+    "test": "node --test teste/logica.test.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
+    "@venus/nucleo": "*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.4.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@venus/build-config": "*",
+    "@vitejs/plugin-react": "^4.3.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0",
+    "vite-plugin-pwa": "^1.0.0"
+  }
+}

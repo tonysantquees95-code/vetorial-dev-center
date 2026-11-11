@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fundo: #070b14;
+  --color-painel: #0e1524;
+  --color-painel2: #131c30;
+  --color-borda: #22304d;
+  --color-texto: #eef3fb;
+  --color-suave: #9fb0cc;
+  --color-ciano: #22d3ee;
+  --color-violeta: #8b5cf6;
+  --color-ok: #34d399;
+  --color-aviso: #fbbf24;
+  --color-erro: #f87171;
+}
+
+html, body, #app { min-height: 100%; }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: radial-gradient(900px 500px at 10% -10%, rgb(34 211 238 / .10), transparent 60%), radial-gradient(800px 500px at 100% 0%, rgb(139 92 246 / .12), transparent 60%), var(--color-fundo);
+  background-attachment: fixed;
+  color: var(--color-texto);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--color-ciano); outline-offset: 2px; }
+::selection { background: rgb(34 211 238 / .3); }
+
+.vidro { background: linear-gradient(180deg, rgb(19 28 48 / .85), rgb(14 21 36 / .85)); border: 1px solid var(--color-borda); backdrop-filter: blur(10px); }
+.num { font-variant-numeric: tabular-nums; }
+@keyframes pulsa { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(1.5); } }
+.ponto-vivo { animation: pulsa 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .ponto-vivo { animation: none; } }
+.rolagem-x { overflow-x: auto; scrollbar-width: none; }
+.rolagem-x::-webkit-scrollbar { display: none; }
+input[type="range"] { accent-color: var(--color-ciano); }
