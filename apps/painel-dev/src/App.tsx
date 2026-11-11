@@ -11,6 +11,29 @@ import { Projetos } from "./telas/Projetos";
 import { Trafego } from "./telas/Trafego";
 import { Icone } from "./ui";
 
+/** Atualizar a página: limpa os caches do app instalado e recarrega, para pegar a versão nova na hora. */
+async function atualizarPagina() {
+  try {
+    const regs = (await navigator.serviceWorker?.getRegistrations?.()) ?? [];
+    await Promise.all(regs.map((r) => r.unregister()));
+    if ("caches" in window) await Promise.all((await caches.keys()).map((k) => caches.delete(k)));
+  } catch { /* segue para o recarregamento mesmo assim */ }
+  const u = new URL(location.href);
+  u.searchParams.set("r", String(Date.now()));
+  location.replace(u.toString());
+}
+
+function BotaoAtualizar({ className = "" }: { className?: string }) {
+  const [girando, setGirando] = useState(false);
+  return (
+    <button type="button" aria-label="Atualizar a página" title="Atualizar" disabled={girando}
+      onClick={() => { setGirando(true); void atualizarPagina(); }}
+      className={`flex h-10 w-10 flex-none items-center justify-center rounded-full border border-borda bg-white/5 text-suave transition hover:bg-white/10 hover:text-white ${className}`}>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={girando ? "animate-spin" : ""} aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 4v5h-5" /></svg>
+    </button>
+  );
+}
+
 const ABAS = [
   { id: "projetos", rotulo: "Projetos", icone: "pasta", tela: Projetos },
   { id: "bi", rotulo: "BI", icone: "grafico", tela: Bi },
@@ -50,8 +73,10 @@ export function App() {
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-borda bg-fundo/85 px-4 py-2.5 backdrop-blur md:hidden" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}>
           <div className="flex min-w-0 items-center gap-2"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={28} height={28} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1></div>
-          <span className={`flex-none rounded-full border px-2.5 py-1 text-[11px] font-medium ${g.ambiente === "producao" ? "border-ok/30 bg-ok/15 text-ok" : g.ambiente === "homologacao" ? "border-aviso/30 bg-aviso/15 text-aviso" : "border-violeta/40 bg-violeta/20 text-violet-200"}`}>{g.ambiente === "producao" ? "Produção" : g.ambiente === "homologacao" ? "Homologação" : "Teste local"}</span>
+          <div className="flex flex-none items-center gap-2"><BotaoAtualizar className="h-9 w-9" />
+          <span className={`flex-none rounded-full border px-2.5 py-1 text-[11px] font-medium ${g.ambiente === "producao" ? "border-ok/30 bg-ok/15 text-ok" : g.ambiente === "homologacao" ? "border-aviso/30 bg-aviso/15 text-aviso" : "border-violeta/40 bg-violeta/20 text-violet-200"}`}>{g.ambiente === "producao" ? "Produção" : g.ambiente === "homologacao" ? "Homologação" : "Teste local"}</span></div>
         </header>
+        <div className="fixed right-4 top-3 z-30 hidden md:block"><BotaoAtualizar /></div>
         <AvisoDeAtualizacao />
         <main className="px-4 pb-28 pt-4 md:px-6 md:pb-10 md:pt-6">
           <h1 className="mb-4 hidden text-xl font-semibold md:block">{ABAS.find((a) => a.id === aba)?.rotulo}</h1>
