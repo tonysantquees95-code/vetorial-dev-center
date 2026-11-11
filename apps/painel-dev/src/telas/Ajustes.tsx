@@ -5,7 +5,7 @@ import { useApp } from "../estado";
 import { useBusca } from "../hooks";
 import { AMBIENTES, compacto, haQuanto, nomeDoProvedor, restante } from "../logica";
 import { Aviso, Barra, Botao, BotaoConfirmar, Cartao, Carregando, Chave, Selo } from "../ui";
-import { Aplicativos } from "./Aplicativos";
+import { Aplicativos, LinksDaVenus } from "./Aplicativos";
 import { SeletorDeAmbiente } from "./Ambiente";
 
 interface LeituraLocal { bateria: { nivel: number | null; carregando: boolean; temperatura: null }; hardware: { modelo: string; so: string; ramMb: number | null; nucleos: number | null; armazenamentoLivreMb: number | null; rede: string } }
@@ -36,6 +36,7 @@ async function lerAparelho(): Promise<LeituraLocal> {
 export function Ajustes() {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
+      <LinksDaVenus />
       <Aplicativos />
       <CartaoAmbiente />
       <CartaoSessao />

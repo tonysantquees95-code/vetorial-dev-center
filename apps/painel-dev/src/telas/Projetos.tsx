@@ -1,3 +1,4 @@
+import { LinksDaVenus } from "./Aplicativos";
 import { useState } from "react";
 import { ErroApi, type ApkInfo, type Cliente, type Fase, type Projeto } from "../api";
 import { useApp } from "../estado";
@@ -17,6 +18,7 @@ export function Projetos() {
   return (
     <div className="space-y-4">
       {erro && <Aviso>{erro}</Aviso>}
+      <LinksDaVenus />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Indicador rotulo="Projetos" valor={String(ps.length)} detalhe={`${ps.filter((p) => p.conectado).length} com repositório`} />
         <Indicador rotulo="Linhas de código" valor={compacto(linhas)} detalhe="soma dos repositórios" />
