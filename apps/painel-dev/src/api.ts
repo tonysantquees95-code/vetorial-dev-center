@@ -127,6 +127,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     cofreIniciar: (senha: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/iniciar", { senha }),
     cofreListar: (senha: string) => chamar<ListaCofre>("POST", "/dev/cofre/listar", { senha }),
     cofreGuardar: (senha: string, nome: string, valor: string) => chamar<{ ok: boolean; previa: string }>("POST", "/dev/cofre/guardar", { senha, nome, valor }),
+    cofreCodigo: (senha: string) => chamar<{ codigo: string; expira: number }>("POST", "/dev/cofre/codigo", { senha }),
     cofreApagar: (senha: string, nome: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/apagar", { senha, nome }),
     cofreTrocarSenha: (senha: string, nova: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/trocar-senha", { senha, nova }),
     apk: (app: string) => chamar<{ app: string; numero: number; tag: string; tamanho: number; url: string }>("GET", `/dev/apk?app=${encodeURIComponent(app)}`),

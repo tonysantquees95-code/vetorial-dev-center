@@ -70,6 +70,7 @@ export function Cofre() {
             aoApagar={async () => { if (await rodar(() => api.cofreApagar(senha, c.nome), `${c.nome} removida do cofre.`)) await abrir(); }} />
         ))}
       </div>
+      <Importar aoGerar={async () => (await rodar(() => api.cofreCodigo(senha)))?.codigo ?? ""} ocupado={ocupado} />
       <NovaChave ocupado={ocupado} aoGuardar={async (n, v) => { if (await rodar(() => api.cofreGuardar(senha, n, v), `${n} guardada.`)) await abrir(); }} />
       <TrocarSenha ocupado={ocupado} aoTrocar={async (nova) => { if (await rodar(() => api.cofreTrocarSenha(senha, nova), "Senha do cofre trocada.")) { setSenha(nova); } }} />
       <Cartao titulo="Últimos acessos" descricao="Sem valores de chave, só o que foi feito.">
@@ -115,6 +116,26 @@ function TrocarSenha({ ocupado, aoTrocar }: { ocupado: boolean; aoTrocar: (nova:
         <input className={campo} type="password" autoComplete="new-password" placeholder="Nova senha (12+ com letras e números)" value={nova} onChange={(e) => setNova(e.target.value)} />
         <Botao disabled={ocupado || !forte(nova)}>Trocar</Botao>
       </form>
+    </Cartao>
+  );
+}
+
+const REPOS = ["Venus-core", "Vindex-", "vetorial-dev-center", "desejo-de-intimidade"];
+function Importar({ aoGerar, ocupado }: { aoGerar: () => Promise<string>; ocupado: boolean }) {
+  const [codigo, setCodigo] = useState("");
+  return (
+    <Cartao titulo="Importar do GitHub" descricao="Traz para o cofre os segredos que você já cadastrou nos repositórios, sem copiar um por um.">
+      <ol className="mb-3 list-decimal space-y-1 pl-5 text-xs text-suave">
+        <li>Toque em “Gerar código” (vale 15 minutos e só funciona uma vez).</li>
+        <li>No GitHub, em cada repositório abaixo: Actions → “Enviar segredos para o cofre” → Run workflow → cole o código.</li>
+        <li>Para cada repositório gere um código novo. Chaves que já estão no cofre não são trocadas, a menos que você marque a opção.</li>
+        <li>Volte aqui e toque em Abrir de novo para ver as chaves que chegaram.</li>
+      </ol>
+      <p className="mb-3 text-xs text-suave">Repositórios: {REPOS.join(" · ")}</p>
+      {codigo ? (
+        <div className="space-y-2"><code className="block break-all rounded-xl border border-borda bg-white/5 p-3 text-sm select-all">{codigo}</code>
+          <Botao onClick={() => { void navigator.clipboard?.writeText(codigo); }}>Copiar</Botao></div>
+      ) : <Botao variante="primario" disabled={ocupado} onClick={async () => setCodigo(await aoGerar())}>Gerar código</Botao>}
     </Cartao>
   );
 }
