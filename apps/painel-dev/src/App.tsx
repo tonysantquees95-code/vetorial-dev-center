@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useApp } from "./estado";
 import { Ajustes } from "./telas/Ajustes";
+import { AvisoDeAtualizacao } from "./telas/Aplicativos";
 import { SeletorDeAmbiente } from "./telas/Ambiente";
 import { Bi } from "./telas/Bi";
 import { Dispositivos } from "./telas/Dispositivos";
@@ -48,9 +49,10 @@ export function App() {
       </aside>
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-borda bg-fundo/85 px-4 py-2.5 backdrop-blur md:hidden" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}>
-          <div className="flex min-w-0 items-center gap-2"><img src="/icons/pwa-192.png" alt="" width={28} height={28} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1></div>
+          <div className="flex min-w-0 items-center gap-2"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={28} height={28} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1></div>
           <span className={`flex-none rounded-full border px-2.5 py-1 text-[11px] font-medium ${g.ambiente === "producao" ? "border-ok/30 bg-ok/15 text-ok" : g.ambiente === "homologacao" ? "border-aviso/30 bg-aviso/15 text-aviso" : "border-violeta/40 bg-violeta/20 text-violet-200"}`}>{g.ambiente === "producao" ? "Produção" : g.ambiente === "homologacao" ? "Homologação" : "Teste local"}</span>
         </header>
+        <AvisoDeAtualizacao />
         <main className="px-4 pb-28 pt-4 md:px-6 md:pb-10 md:pt-6">
           <h1 className="mb-4 hidden text-xl font-semibold md:block">{ABAS.find((a) => a.id === aba)?.rotulo}</h1>
           <Atual />

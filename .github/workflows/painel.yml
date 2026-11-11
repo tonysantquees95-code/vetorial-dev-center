@@ -27,6 +27,7 @@ jobs:
         run: npm run build
         env:
           BASE_URL: /vetorial-dev-center/
+          VITE_BUILD: ${{ github.run_number }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/painel-dev/dist
@@ -67,6 +68,8 @@ jobs:
         run: |
           npm run android:add
           npm run build:apk
+        env:
+          VITE_BUILD: ${{ github.run_number }}
       - name: Compilar o APK
         working-directory: apps/painel-dev/android
         run: |

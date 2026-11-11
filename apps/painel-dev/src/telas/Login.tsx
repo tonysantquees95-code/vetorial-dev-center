@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { ADMIN_EMAIL_PADRAO, ErroApi } from "../api";
 import { useApp } from "../estado";
 import { Aviso, Botao, Cartao } from "../ui";
+import { Aplicativos } from "./Aplicativos";
 import { SeletorDeAmbiente } from "./Ambiente";
 
 interface Escolha { tipo: "encerrar" | "remover"; itens: { id: string; titulo: string }[] }
@@ -93,6 +94,7 @@ export function Login() {
           </button>
         </Cartao>
       )}
+      <Aplicativos />
       <p className="text-center text-xs text-suave">Só a conta administrativa da Vetorial Tech entra aqui. A sessão dura 12 horas e conta nas regras de 3 aparelhos e 2 ativos.</p>
     </main>
   );

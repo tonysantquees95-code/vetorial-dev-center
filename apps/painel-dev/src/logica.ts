@@ -159,3 +159,28 @@ export const COR_DO_PROVEDOR: Record<string, string> = { groq: "#fb923c", deepse
 
 /** Progresso médio das fases (0–100), como o servidor calcula. */
 export const progressoMedio = (fases: { progresso: number }[]): number => (fases.length ? Math.round(soma(fases.map((f) => f.progresso)) / fases.length) : 0);
+
+// ------------------------------------------------------------------ aplicativos (download e atualização)
+export const REPOSITORIO = "tonysantquees95-code/vetorial-dev-center";
+
+/** Número do build numa tag "dev-1.N" (ou "1.N"); 0 se não for uma tag de versão. */
+export const buildDaTag = (tag: string): number => {
+  const m = /^(?:dev-)?1\.(\d+)$/.exec(String(tag).trim());
+  return m ? Number(m[1]) : 0;
+};
+
+/** Do conjunto de releases da API do GitHub, a mais nova com o APK anexado. */
+export function ultimoApk(releases: unknown): { build: number; url: string } | null {
+  if (!Array.isArray(releases)) return null;
+  let melhor: { build: number; url: string } | null = null;
+  for (const r of releases as { tag_name?: string; draft?: boolean; assets?: { name?: string; browser_download_url?: string }[] }[]) {
+    if (!r || r.draft) continue;
+    const build = buildDaTag(r.tag_name ?? "");
+    const apk = (r.assets ?? []).find((a) => a.name === "VenusDev.apk" && a.browser_download_url);
+    if (build > 0 && apk && (!melhor || build > melhor.build)) melhor = { build, url: apk.browser_download_url as string };
+  }
+  return melhor;
+}
+
+export type Plataforma = "android" | "windows" | "outra";
+export const plataformaDe = (ua: string): Plataforma => (/android/i.test(ua) ? "android" : /windows/i.test(ua) ? "windows" : "outra");

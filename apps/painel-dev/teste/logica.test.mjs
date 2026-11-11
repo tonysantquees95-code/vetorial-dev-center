@@ -78,3 +78,20 @@ test("tons e tráfego ao vivo", () => {
   assert.equal(progressoMedio([{ progresso: 100 }, { progresso: 50 }]), 75);
   assert.equal(progressoMedio([]), 0);
 });
+
+import { buildDaTag, ultimoApk, plataformaDe } from "../src/logica.ts";
+test("aplicativos: build da tag, último APK e plataforma", () => {
+  assert.equal(buildDaTag("dev-1.42"), 42);
+  assert.equal(buildDaTag("v2"), 0);
+  const r = [
+    { tag_name: "dev-1.7", assets: [{ name: "VenusDev.apk", browser_download_url: "https://x/7.apk" }] },
+    { tag_name: "dev-1.9", assets: [{ name: "VenusDev.apk", browser_download_url: "https://x/9.apk" }] },
+    { tag_name: "dev-1.10", draft: true, assets: [{ name: "VenusDev.apk", browser_download_url: "https://x/10.apk" }] },
+    { tag_name: "dev-1.11", assets: [] },
+  ];
+  assert.deepEqual(ultimoApk(r), { build: 9, url: "https://x/9.apk" });
+  assert.equal(ultimoApk(null), null);
+  assert.equal(plataformaDe("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"), "windows");
+  assert.equal(plataformaDe("Mozilla/5.0 (Linux; Android 14; Pixel)"), "android");
+  assert.equal(plataformaDe("Mozilla/5.0 (Macintosh)"), "outra");
+});
