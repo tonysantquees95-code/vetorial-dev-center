@@ -91,38 +91,63 @@ export function Aplicativos() {
   );
 }
 
-/** Links públicos de download da Vênus (Android e Windows) para baixar, copiar e compartilhar, e o endereço do Painel Dev. */
+/** Todos os links da suíte num lugar só: abrir, copiar e compartilhar (sem procurar no GitHub nem em pastas). */
 export function LinksDaVenus() {
   const { endereco } = useApp();
   const [msg, setMsg] = useState("");
   const base = endereco.replace(/\/+$/, "");
-  const itens = [
-    { rotulo: "Vênus para Android", detalhe: "APK: baixe e toque no arquivo para instalar.", url: `${base}/atualizacao?app=venus&baixar=1` },
-    { rotulo: "Vênus para Windows", detalhe: "Instalador: abra no computador para testar a Vênus.", url: `${base}/atualizacao?app=windows&baixar=1` },
-    { rotulo: "Painel Dev (site)", detalhe: "Abre o painel em qualquer navegador e pode ser instalado como app.", url: `${location.origin}${import.meta.env.BASE_URL}` },
+  const grupos: { titulo: string; itens: { rotulo: string; detalhe: string; url: string; abrir?: boolean }[] }[] = [
+    { titulo: "Vênus", itens: [
+      { rotulo: "Site da Vênus", detalhe: "A página de vendas: planos, teste grátis e entrar.", url: `${base}/`, abrir: true },
+      { rotulo: "Vênus no navegador (iPhone)", detalhe: "Para iPhone e qualquer navegador. No Safari: Compartilhar › Adicionar à Tela de Início.", url: `${base}/app/`, abrir: true },
+      { rotulo: "Vênus para Android", detalhe: "APK: baixe e toque no arquivo para instalar.", url: `${base}/venus/android` },
+      { rotulo: "Vênus para Windows", detalhe: "Instalador: abra no computador.", url: `${base}/venus/windows` },
+      { rotulo: "Minha conta (Vetorial ID)", detalhe: "Assinatura, pacotes, aparelhos e downloads.", url: `${base}/conta.html`, abrir: true },
+      { rotulo: "Página de download da Vênus", detalhe: "Uma página curta com todos os botões, boa para mandar a clientes.", url: `${base}/venus`, abrir: true },
+    ] },
+    { titulo: "Vindex", itens: [
+      { rotulo: "Vindex para Android", detalhe: "APK do otimizador e organizador.", url: `${base}/vindex/android` },
+      { rotulo: "Vindex para Windows", detalhe: "Instalador do Vindex.", url: `${base}/vindex/windows` },
+      { rotulo: "Página de download do Vindex", detalhe: "Página curta com os dois botões.", url: `${base}/vindex`, abrir: true },
+    ] },
+    { titulo: "Administração", itens: [
+      { rotulo: "Painel Dev (site)", detalhe: "Abre o painel em qualquer navegador e pode ser instalado como app.", url: `${location.origin}${import.meta.env.BASE_URL}`, abrir: true },
+    ] },
   ];
+  const todos = grupos.flatMap((g) => g.itens);
   const copiar = async (u: string, nome: string) => {
     try { await navigator.clipboard.writeText(u); setMsg(`Link de “${nome}” copiado.`); } catch { setMsg(u); }
   };
   const compartilhar = async (u: string, nome: string) => {
     try { await navigator.share({ title: nome, url: u }); } catch { await copiar(u, nome); }
   };
+  const copiarTudo = async () => {
+    const texto = todos.map((i) => `${i.rotulo}: ${i.url}`).join("\n");
+    try { await navigator.clipboard.writeText(texto); setMsg("Todos os links foram copiados."); } catch { setMsg(texto); }
+  };
   return (
-    <Cartao titulo="Baixar e compartilhar" descricao="Todos os links num lugar só, sem procurar no GitHub.">
-      <div className="space-y-3">
-        {itens.map((i, n) => (
-          <div key={i.rotulo} className="rounded-xl border border-borda bg-white/3 px-3 py-2">
-            <div className="text-sm">{i.rotulo}</div>
-            <div className="text-xs text-suave">{i.detalhe}</div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <Botao variante="primario" onClick={() => { window.location.href = i.url; }}>{n === 2 ? "Abrir" : "Baixar"}</Botao>
-              <Botao onClick={() => void copiar(i.url, i.rotulo)}>Copiar link</Botao>
-              {typeof navigator.share === "function" && <Botao onClick={() => void compartilhar(i.url, i.rotulo)}>Compartilhar</Botao>}
+    <Cartao titulo="Links e downloads" descricao="Tudo num lugar só: toque para abrir, copiar ou compartilhar." acao={<Botao onClick={() => void copiarTudo()}>Copiar todos</Botao>}>
+      <div className="space-y-5">
+        {grupos.map((g) => (
+          <section key={g.titulo}>
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-suave">{g.titulo}</h3>
+            <div className="space-y-3">
+              {g.itens.map((i) => (
+                <div key={i.rotulo} className="rounded-xl border border-borda bg-white/3 px-3 py-2">
+                  <div className="text-sm">{i.rotulo}</div>
+                  <div className="text-xs text-suave">{i.detalhe}</div>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {i.abrir ? <Botao variante="primario" onClick={() => { window.open(i.url, "_blank", "noopener"); }}>Abrir</Botao> : <Botao variante="primario" onClick={() => { window.location.href = i.url; }}>Baixar</Botao>}
+                    <Botao onClick={() => void copiar(i.url, i.rotulo)}>Copiar link</Botao>
+                    {typeof navigator.share === "function" && <Botao onClick={() => void compartilhar(i.url, i.rotulo)}>Compartilhar</Botao>}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
         ))}
         {msg && <p className="break-all text-xs text-suave" role="status">{msg}</p>}
-        <p className="text-xs text-suave">A Vênus ainda não tem um site próprio: para usar no computador, instale a versão Windows. Se o Windows ainda não aparecer, a primeira versão está sendo gerada.</p>
+        <p className="text-xs text-suave">Se um download ainda não aparecer, a primeira versão está sendo gerada. A Vênus web só aparece depois que o servidor for publicado com ela.</p>
       </div>
     </Cartao>
   );
