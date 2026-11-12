@@ -65,6 +65,15 @@ export function App() {
     window.addEventListener("hashchange", f);
     return () => window.removeEventListener("hashchange", f);
   }, []);
+  // o botão voltar do aparelho fecha o menu em vez de sair da aba
+  useEffect(() => {
+    if (!menu) return;
+    try { history.pushState({ menu: 1 }, ""); } catch { return; }
+    let porVoltar = false;
+    const f = () => { porVoltar = true; setMenu(false); };
+    window.addEventListener("popstate", f, { once: true });
+    return () => { window.removeEventListener("popstate", f); if (!porVoltar && history.state?.menu) history.back(); };
+  }, [menu]);
   const ir = (id: Id) => {
     location.hash = `/${id}`;
     setAba(id);

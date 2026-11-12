@@ -73,6 +73,35 @@ jobs:
           npm run build:apk
         env:
           VITE_BUILD: ${{ github.run_number }}
+      # O Capacitor não trata o "voltar" do aparelho: sem isto o app fecha. Aqui ele anda no histórico (abas) e só sai na última tela.
+      - name: Voltar do aparelho volta uma tela
+        run: |
+          d=apps/painel-dev/android/app/src/main/java/com/vetorialtech/venus/dev
+          mkdir -p "$d"
+          cat > "$d/MainActivity.java" <<'JAVA'
+          package com.vetorialtech.venus.dev;
+
+          import android.os.Bundle;
+          import android.webkit.WebView;
+          import androidx.activity.OnBackPressedCallback;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                      @Override
+                      public void handleOnBackPressed() {
+                          WebView w = getBridge() == null ? null : getBridge().getWebView();
+                          if (w != null && w.canGoBack()) { w.goBack(); return; }
+                          setEnabled(false);
+                          getOnBackPressedDispatcher().onBackPressed();
+                      }
+                  });
+              }
+          }
+          JAVA
       - name: Compilar o APK
         working-directory: apps/painel-dev/android
         run: |
