@@ -100,7 +100,7 @@ export function App() {
         ))}
         <button onClick={() => setMenu(true)} aria-haspopup="dialog" className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 text-[11px] ${!FIXAS.includes(aba) ? "text-ciano" : "text-suave"}`}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>Menu</button>
       </nav>
-      {menu && <MenuPopup aba={aba} ir={ir} fechar={() => setMenu(false)} email={email} />}
+      {menu && <MenuPopup aba={aba} ir={ir} fechar={() => setMenu(false)} email={email ?? ""} />}
     </div>
   );
 }
