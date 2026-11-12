@@ -11,6 +11,7 @@ import { Login } from "./telas/Login";
 import { Projetos } from "./telas/Projetos";
 import { Trafego } from "./telas/Trafego";
 import { Icone } from "./ui";
+import { LogoVivo } from "./logo";
 
 function Links() {
   return <div className="mx-auto max-w-3xl"><LinksDaVenus /></div>;
@@ -75,7 +76,7 @@ export function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[1400px]">
       <aside className="sticky top-0 hidden h-dvh w-56 flex-none flex-col gap-1 border-r border-borda p-4 md:flex">
-        <div className="mb-4 flex items-center gap-2"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={36} height={36} className="rounded-xl" /><div><div className="text-sm font-semibold leading-tight">Painel Dev</div><div className="text-[11px] text-suave">Vetorial Tech</div></div></div>
+        <div className="mb-4 flex items-center gap-2"><LogoVivo tam={36} /><div><div className="text-sm font-semibold leading-tight">Painel Dev</div><div className="text-[11px] text-suave">Vetorial Tech</div></div></div>
         {ABAS.map((a) => (
           <button key={a.id} onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined} className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition ${aba === a.id ? "bg-ciano/15 text-ciano" : "text-suave hover:bg-white/5"}`}><Icone nome={a.icone} />{a.rotulo}</button>
         ))}
@@ -83,7 +84,7 @@ export function App() {
       </aside>
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-borda bg-fundo/85 px-4 py-2.5 backdrop-blur md:hidden" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}>
-          <button type="button" onClick={() => setMenu(true)} aria-haspopup="dialog" aria-label="Abrir o menu" className="-ml-1 flex min-h-10 min-w-0 items-center gap-2 rounded-xl px-1 active:bg-white/5"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={30} height={30} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-suave" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></button>
+          <button type="button" onClick={() => setMenu(true)} aria-haspopup="dialog" aria-label="Abrir o menu" className="-ml-1 flex min-h-10 min-w-0 items-center gap-2 rounded-xl px-1 active:bg-white/5"><LogoVivo tam={30} /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-suave" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></button>
           <div className="flex flex-none items-center gap-2"><BotaoAtualizar className="h-9 w-9" />
           <span className={`flex-none rounded-full border px-2.5 py-1 text-[11px] font-medium ${g.ambiente === "producao" ? "border-ok/30 bg-ok/15 text-ok" : g.ambiente === "homologacao" ? "border-aviso/30 bg-aviso/15 text-aviso" : "border-violeta/40 bg-violeta/20 text-violet-200"}`}>{g.ambiente === "producao" ? "Produção" : g.ambiente === "homologacao" ? "Homologação" : "Teste local"}</span></div>
         </header>
@@ -120,7 +121,7 @@ function MenuPopup({ aba, ir, fechar, email }: { aba: Id; ir: (id: Id) => void; 
       <div className="relative max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-borda bg-fundo p-4 shadow-2xl md:rounded-3xl" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/15 md:hidden" aria-hidden="true" />
         <div className="mb-3 flex items-center gap-3">
-          <img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={40} height={40} className="rounded-xl" />
+          <LogoVivo tam={40} />
           <div className="min-w-0 flex-1"><div className="text-[15px] font-semibold leading-tight">Painel Dev</div><div className="truncate text-xs text-suave">{email || "Vetorial Tech"}</div></div>
           <button type="button" onClick={fechar} aria-label="Fechar" className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-borda bg-white/5 text-suave"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
         </div>
