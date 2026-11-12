@@ -111,8 +111,8 @@ function LinhaDeApk({ a }: { a: ApkInfo }) {
     setMsg("");
     try {
       const r = await api.apk(a.app);
-      window.open(r.url, "_blank", "noopener,noreferrer");
       setMsg("Download iniciado. O link vale por poucos minutos.");
+      window.location.href = r.url; // abrir em nova janela depois de esperar a rede é bloqueado no celular
     } catch (e) {
       setMsg(e instanceof ErroApi ? e.message : "Não consegui o link agora.");
     }
