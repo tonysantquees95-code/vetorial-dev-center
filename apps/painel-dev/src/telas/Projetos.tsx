@@ -86,12 +86,7 @@ function CartaoDoProjeto({ p, aoMudar }: { p: Projeto; aoMudar: () => void }) {
         </div>
       )}
 
-      {p.apks.length > 0 && p.conectado && (
-        <div className="mb-4 space-y-1.5">
-          <h3 className="text-xs font-medium uppercase tracking-wide text-suave">APK e atualizações</h3>
-          {p.apks.map((a) => <LinhaDeApk key={a.app} a={a} />)}
-        </div>
-      )}
+      <Plataformas p={p} />
 
       <Fases p={p} aoMudar={aoMudar} api={api} />
     </Cartao>
@@ -102,33 +97,63 @@ const Mini = ({ rotulo, valor }: { rotulo: string; valor: string }) => (
   <div className="rounded-xl border border-borda bg-white/3 px-2 py-2"><div className="num text-lg font-semibold">{valor}</div><div className="text-[11px] text-suave">{rotulo}</div></div>
 );
 
-function LinhaDeApk({ a }: { a: ApkInfo }) {
-  const { api } = useApp();
+type Destino = { tipo: "app"; app: string } | { tipo: "site"; url: string; nota?: string } | { tipo: "breve" };
+type Plataforma = "android" | "windows" | "web" | "ios";
+const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", web: "Versão web", ios: "iOS" };
+
+/** Onde cada projeto é usado. O que ainda não existe fica como atalho "em breve" e vira botão de verdade quando sair. */
+function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>> {
+  switch (id) {
+    case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
+    case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
+    case "vortex": return { android: { tipo: "app", app: "vortex" }, windows: { tipo: "breve" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
+    case "devcenter": { const painel = `${location.origin}${import.meta.env.BASE_URL}`; return { android: { tipo: "app", app: "dev" }, windows: { tipo: "breve" }, web: { tipo: "site", url: painel }, ios: { tipo: "site", url: painel, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } }; }
+    default: return {};
+  }
+}
+
+function Plataformas({ p }: { p: Projeto }) {
+  const { api, endereco } = useApp();
   const [msg, setMsg] = useState("");
-  const [ocupado, setOcupado] = useState(false);
-  async function baixar() {
-    setOcupado(true);
+  const [ocupado, setOcupado] = useState("");
+  const d = destinos(p.id, endereco.replace(/\/+$/, ""));
+  const ordem = (["android", "windows", "web", "ios"] as Plataforma[]).filter((k) => d[k]);
+  if (ordem.length === 0) return null;
+  async function baixar(app: string) {
+    setOcupado(app);
     setMsg("");
     try {
-      const r = await api.apk(a.app);
+      const r = await api.apk(app);
       setMsg("Download iniciado. O link vale por poucos minutos.");
       window.location.href = r.url; // abrir em nova janela depois de esperar a rede é bloqueado no celular
     } catch (e) {
       setMsg(e instanceof ErroApi ? e.message : "Não consegui o link agora.");
     }
-    setOcupado(false);
+    setOcupado("");
   }
   return (
-    <div className="rounded-xl border border-borda bg-white/3 px-3 py-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <div className="truncate text-sm">{a.rotulo}</div>
-          <div className="num text-xs text-suave">{a.versao ? `versão 1.${a.versao.numero} · ${bytes(a.versao.tamanho)} · ${haQuanto(a.versao.publicado)}` : "nenhum APK publicado ainda"}</div>
-        </div>
-        <div className="flex flex-none items-center gap-1.5">
-          {a.versao && <a href={a.versao.pagina} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center px-2 text-xs text-ciano hover:underline">Notas</a>}
-          <Botao variante="primario" disabled={!a.versao || ocupado} onClick={baixar} aria-label={`Baixar ${a.rotulo}`}><Icone nome="baixar" tam={16} />Baixar</Botao>
-        </div>
+    <div className="mb-4">
+      <h3 className="mb-1.5 text-xs font-medium uppercase tracking-wide text-suave">Baixar e abrir</h3>
+      <div className="grid grid-cols-2 gap-2">
+        {ordem.map((k) => {
+          const x = d[k] as Destino;
+          const info: ApkInfo | undefined = x.tipo === "app" ? p.apks.find((a) => a.app === x.app) : undefined;
+          const pronto = x.tipo === "site" || (x.tipo === "app" && !!info?.versao && p.conectado);
+          const detalhe = x.tipo === "breve" ? "Em breve" : x.tipo === "site" ? (x.nota ?? "Abre no navegador") : info?.versao ? `1.${info.versao.numero} · ${bytes(info.versao.tamanho)} · ${haQuanto(info.versao.publicado)}` : "Ainda sem versão publicada";
+          return (
+            <div key={k} className="flex flex-col justify-between gap-2 rounded-xl border border-borda bg-white/3 px-3 py-2">
+              <div className="min-w-0">
+                <div className="text-sm">{ROTULOS[k]}</div>
+                <div className="num text-xs text-suave">{detalhe}</div>
+              </div>
+              <Botao variante={pronto ? "primario" : undefined} disabled={!pronto || ocupado === (x.tipo === "app" ? x.app : "")}
+                aria-label={`${x.tipo === "site" ? "Abrir" : "Baixar"} ${p.nome} para ${ROTULOS[k]}`}
+                onClick={() => { if (x.tipo === "site") window.open(x.url, "_blank", "noopener,noreferrer"); else if (x.tipo === "app") void baixar(x.app); }}>
+                {x.tipo === "site" ? "Abrir" : <><Icone nome="baixar" tam={16} />{x.tipo === "breve" ? "Em breve" : "Baixar"}</>}
+              </Botao>
+            </div>
+          );
+        })}
       </div>
       {msg && <p className="mt-1 text-xs text-suave" role="status">{msg}</p>}
     </div>
