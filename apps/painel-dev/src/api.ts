@@ -19,7 +19,7 @@ export interface ApkInfo { app: string; rotulo: string; versao: { numero: number
 export interface Metricas { arquivos: number; linhas: number; linguagens: { nome: string; arquivos: number; linhas: number }[]; pastas?: { nome: string; arquivos: number; linhas: number }[]; fonte: "ci" | "estimado"; atualizado: number; commit?: string }
 export interface Projeto {
   id: string; nome: string; descricao: string; repo: string | null; urlRepo: string | null; conectado: boolean; aviso?: string;
-  fases: Fase[]; progresso: number; fasesConcluidas: number; metricas: Metricas | null; builds: Build[]; estadoBuild: string; apks: ApkInfo[];
+  fases: Fase[]; progresso: number; fasesConcluidas: number; metricas: Metricas | null; builds: Build[]; estadoBuild: string; apks: ApkInfo[]; compilando?: { workflow: string; percentual: number; etapa: string } | null;
 }
 export interface Painel { gerado: number; admin: string; projetos: Projeto[] }
 export interface Bi {

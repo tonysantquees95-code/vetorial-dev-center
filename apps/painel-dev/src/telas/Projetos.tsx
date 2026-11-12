@@ -46,11 +46,23 @@ function CartaoDoProjeto({ p, aoMudar }: { p: Projeto; aoMudar: () => void }) {
       }
     >
       <div className="mb-4">
-        <div className="mb-1.5 flex items-end justify-between">
-          <span className="text-xs text-suave">Progresso geral · {p.fasesConcluidas}/{p.fases.length} fases concluídas</span>
-          <span className="num text-2xl font-semibold">{p.progresso}%</span>
-        </div>
-        <Barra valor={p.progresso} alto rotulo={`Progresso do ${p.nome}`} />
+        {p.compilando ? (
+          <>
+            <div className="mb-1.5 flex items-end justify-between gap-2">
+              <span className="min-w-0 text-xs text-aviso"><span className="block truncate">Compilando · {p.compilando.workflow}</span>{p.compilando.etapa && <span className="block truncate text-suave">{p.compilando.etapa}</span>}</span>
+              <span className="num text-2xl font-semibold text-aviso">{p.compilando.percentual}%</span>
+            </div>
+            <Barra valor={p.compilando.percentual} alto tom="aviso" rotulo={`Compilação do ${p.nome}`} />
+          </>
+        ) : (
+          <>
+            <div className="mb-1.5 flex items-end justify-between">
+              <span className="text-xs text-suave">Progresso geral · {p.fasesConcluidas}/{p.fases.length} etapas concluídas</span>
+              <span className="num text-2xl font-semibold">{p.progresso}%</span>
+            </div>
+            <Barra valor={p.progresso} alto rotulo={`Progresso do ${p.nome}`} />
+          </>
+        )}
       </div>
 
       {!p.conectado && <LigarRepositorio p={p} aoSalvar={aoMudar} api={api} />}
