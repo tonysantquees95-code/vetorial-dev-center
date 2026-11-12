@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useApp } from "./estado";
 import { Ajustes } from "./telas/Ajustes";
-import { AvisoDeAtualizacao } from "./telas/Aplicativos";
+import { AvisoDeAtualizacao, LinksDaVenus } from "./telas/Aplicativos";
 import { SeletorDeAmbiente } from "./telas/Ambiente";
 import { Bi } from "./telas/Bi";
 import { Cofre } from "./telas/Cofre";
@@ -11,6 +11,10 @@ import { Login } from "./telas/Login";
 import { Projetos } from "./telas/Projetos";
 import { Trafego } from "./telas/Trafego";
 import { Icone } from "./ui";
+
+function Links() {
+  return <div className="mx-auto max-w-3xl"><LinksDaVenus /></div>;
+}
 
 /** Atualizar a página: limpa os caches do app instalado e recarrega, para pegar a versão nova na hora. */
 async function atualizarPagina() {
@@ -36,14 +40,17 @@ function BotaoAtualizar({ className = "" }: { className?: string }) {
 }
 
 const ABAS = [
-  { id: "projetos", rotulo: "Projetos", icone: "pasta", tela: Projetos },
-  { id: "bi", rotulo: "BI", icone: "grafico", tela: Bi },
-  { id: "ferramentas", rotulo: "Funções", icone: "chip", tela: Ferramentas },
-  { id: "trafego", rotulo: "Tráfego", icone: "pulso", tela: Trafego },
-  { id: "dispositivos", rotulo: "Aparelhos", icone: "celular", tela: Dispositivos },
-  { id: "cofre", rotulo: "Cofre", icone: "cadeado", tela: Cofre },
-  { id: "ajustes", rotulo: "Ajustes", icone: "engrenagem", tela: Ajustes }
+  { id: "projetos", rotulo: "Projetos", detalhe: "Builds, versões e downloads", icone: "pasta", tela: Projetos },
+  { id: "links", rotulo: "Links e atalhos", detalhe: "Sites, downloads e páginas", icone: "link", tela: Links },
+  { id: "bi", rotulo: "BI", detalhe: "Números e gráficos", icone: "grafico", tela: Bi },
+  { id: "ferramentas", rotulo: "Funções", detalhe: "IA e automações", icone: "chip", tela: Ferramentas },
+  { id: "trafego", rotulo: "Tráfego", detalhe: "Uso e atividade", icone: "pulso", tela: Trafego },
+  { id: "dispositivos", rotulo: "Aparelhos", detalhe: "Onde o app está instalado", icone: "celular", tela: Dispositivos },
+  { id: "cofre", rotulo: "Cofre", detalhe: "Chaves e senhas das APIs", icone: "cadeado", tela: Cofre },
+  { id: "ajustes", rotulo: "Ajustes", detalhe: "Conta, ambiente e cache", icone: "engrenagem", tela: Ajustes }
 ] as const;
+/** Os que ficam sempre à mão na barra de baixo; o resto está no menu. */
+const FIXAS: Id[] = ["projetos", "links", "bi"];
 type Id = (typeof ABAS)[number]["id"];
 
 const daHash = (): Id => (ABAS.find((a) => `#/${a.id}` === location.hash)?.id ?? "projetos") as Id;
@@ -51,6 +58,7 @@ const daHash = (): Id => (ABAS.find((a) => `#/${a.id}` === location.hash)?.id ??
 export function App() {
   const { logado, email, g } = useApp();
   const [aba, setAba] = useState<Id>(daHash);
+  const [menu, setMenu] = useState(false);
   useEffect(() => {
     const f = () => setAba(daHash());
     window.addEventListener("hashchange", f);
@@ -59,6 +67,7 @@ export function App() {
   const ir = (id: Id) => {
     location.hash = `/${id}`;
     setAba(id);
+    setMenu(false);
     window.scrollTo({ top: 0 });
   };
   if (!logado) return <Login />;
@@ -74,7 +83,7 @@ export function App() {
       </aside>
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-borda bg-fundo/85 px-4 py-2.5 backdrop-blur md:hidden" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }}>
-          <div className="flex min-w-0 items-center gap-2"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={28} height={28} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1></div>
+          <button type="button" onClick={() => setMenu(true)} aria-haspopup="dialog" aria-label="Abrir o menu" className="-ml-1 flex min-h-10 min-w-0 items-center gap-2 rounded-xl px-1 active:bg-white/5"><img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={30} height={30} className="rounded-lg" /><h1 className="truncate text-[15px] font-semibold">{ABAS.find((a) => a.id === aba)?.rotulo}</h1><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-suave" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></button>
           <div className="flex flex-none items-center gap-2"><BotaoAtualizar className="h-9 w-9" />
           <span className={`flex-none rounded-full border px-2.5 py-1 text-[11px] font-medium ${g.ambiente === "producao" ? "border-ok/30 bg-ok/15 text-ok" : g.ambiente === "homologacao" ? "border-aviso/30 bg-aviso/15 text-aviso" : "border-violeta/40 bg-violeta/20 text-violet-200"}`}>{g.ambiente === "producao" ? "Produção" : g.ambiente === "homologacao" ? "Homologação" : "Teste local"}</span></div>
         </header>
@@ -85,11 +94,47 @@ export function App() {
           <Atual />
         </main>
       </div>
-      <nav aria-label="Seções" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-[repeat(7,minmax(0,1fr))] border-t border-borda bg-fundo/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-        {ABAS.map((a) => (
-          <button key={a.id} onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined} className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 text-[10px] ${aba === a.id ? "text-ciano" : "text-suave"}`}><Icone nome={a.icone} tam={21} />{a.rotulo}</button>
+      <nav aria-label="Seções" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-borda bg-fundo/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        {ABAS.filter((a) => FIXAS.includes(a.id)).map((a) => (
+          <button key={a.id} onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined} className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 text-[11px] ${aba === a.id ? "text-ciano" : "text-suave"}`}><Icone nome={a.icone} tam={22} /><span className="max-w-full truncate px-1">{a.id === "links" ? "Links" : a.rotulo}</span></button>
         ))}
+        <button onClick={() => setMenu(true)} aria-haspopup="dialog" className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-0.5 text-[11px] ${!FIXAS.includes(aba) ? "text-ciano" : "text-suave"}`}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>Menu</button>
       </nav>
+      {menu && <MenuPopup aba={aba} ir={ir} fechar={() => setMenu(false)} email={email} />}
+    </div>
+  );
+}
+
+/** Menu em pop-up: abre pela fotinho/título lá em cima ou pelo "Menu" embaixo e mostra todas as seções. */
+function MenuPopup({ aba, ir, fechar, email }: { aba: Id; ir: (id: Id) => void; fechar: () => void; email: string }) {
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => { if (e.key === "Escape") fechar(); };
+    window.addEventListener("keydown", tecla);
+    const antes = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", tecla); document.body.style.overflow = antes; };
+  }, [fechar]);
+  return (
+    <div className="fixed inset-0 z-40 flex items-end justify-center md:items-center" role="dialog" aria-modal="true" aria-label="Menu do Painel Dev">
+      <button type="button" aria-label="Fechar o menu" onClick={fechar} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className="relative max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-borda bg-fundo p-4 shadow-2xl md:rounded-3xl" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+        <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/15 md:hidden" aria-hidden="true" />
+        <div className="mb-3 flex items-center gap-3">
+          <img src={`${import.meta.env.BASE_URL}icons/pwa-192.png`} alt="" width={40} height={40} className="rounded-xl" />
+          <div className="min-w-0 flex-1"><div className="text-[15px] font-semibold leading-tight">Painel Dev</div><div className="truncate text-xs text-suave">{email || "Vetorial Tech"}</div></div>
+          <button type="button" onClick={fechar} aria-label="Fechar" className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-borda bg-white/5 text-suave"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {ABAS.map((a) => (
+            <button key={a.id} type="button" onClick={() => ir(a.id)} aria-current={aba === a.id ? "page" : undefined}
+              className={`flex min-h-[84px] flex-col items-start justify-between gap-1 rounded-2xl border p-3 text-left transition active:scale-[0.98] ${aba === a.id ? "border-ciano/50 bg-ciano/10 text-ciano" : "border-borda bg-white/4 hover:bg-white/8"}`}>
+              <Icone nome={a.icone} tam={22} />
+              <span><span className="block text-sm font-medium leading-tight">{a.rotulo}</span><span className={`block text-[11px] leading-snug ${aba === a.id ? "text-ciano/70" : "text-suave"}`}>{a.detalhe}</span></span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-3"><SeletorDeAmbiente compacto /></div>
+      </div>
     </div>
   );
 }
