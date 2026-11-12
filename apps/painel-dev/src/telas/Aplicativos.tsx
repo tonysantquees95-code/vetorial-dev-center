@@ -110,6 +110,11 @@ export function LinksDaVenus() {
       { rotulo: "Vindex para Windows", detalhe: "Instalador do Vindex.", url: `${base}/vindex/windows` },
       { rotulo: "Página de download do Vindex", detalhe: "Página curta com os dois botões.", url: `${base}/vindex`, abrir: true },
     ] },
+    { titulo: "Vortex", itens: [
+      { rotulo: "Vortex para Android", detalhe: "APK da central de jogos retrô.", url: `${base}/vortex/android` },
+      { rotulo: "Vortex para Windows", detalhe: "Instalador do Vortex.", url: `${base}/vortex/windows` },
+      { rotulo: "Página de download do Vortex", detalhe: "Página curta com os dois botões.", url: `${base}/vortex`, abrir: true },
+    ] },
     { titulo: "Administração", itens: [
       { rotulo: "Painel Dev (site)", detalhe: "Abre o painel em qualquer navegador e pode ser instalado como app.", url: `${location.origin}${import.meta.env.BASE_URL}`, abrir: true },
     ] },
