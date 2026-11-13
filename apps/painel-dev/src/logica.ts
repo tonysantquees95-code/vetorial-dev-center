@@ -182,5 +182,18 @@ export function ultimoApk(releases: unknown): { build: number; url: string } | n
   return melhor;
 }
 
+/** Última versão com o instalador do Windows anexado. */
+export function ultimoWindows(releases: unknown): { build: number; url: string } | null {
+  if (!Array.isArray(releases)) return null;
+  let melhor: { build: number; url: string } | null = null;
+  for (const r of releases as { tag_name?: string; draft?: boolean; assets?: { name?: string; browser_download_url?: string }[] }[]) {
+    if (!r || r.draft) continue;
+    const build = buildDaTag(r.tag_name ?? "");
+    const exe = (r.assets ?? []).find((a) => a.name === "VetorialDev-Setup.exe" && a.browser_download_url);
+    if (build > 0 && exe && (!melhor || build > melhor.build)) melhor = { build, url: exe.browser_download_url as string };
+  }
+  return melhor;
+}
+
 export type Plataforma = "android" | "windows" | "outra";
 export const plataformaDe = (ua: string): Plataforma => (/android/i.test(ua) ? "android" : /windows/i.test(ua) ? "windows" : "outra");

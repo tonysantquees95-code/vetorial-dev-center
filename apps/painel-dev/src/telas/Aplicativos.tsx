@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { rodandoNoApp } from "@venus/nucleo";
 import { useApp } from "../estado";
-import { REPOSITORIO, plataformaDe, ultimoApk } from "../logica";
+import { REPOSITORIO, plataformaDe, ultimoApk, ultimoWindows } from "../logica";
 import { Aviso, Botao, Cartao } from "../ui";
 
 const BUILD = Number(((import.meta.env as Record<string, string | undefined>).VITE_BUILD) ?? 0) || 0;
@@ -14,12 +14,15 @@ if (typeof window !== "undefined") {
 
 /** Última versão do APK publicada (API pública do GitHub); null enquanto carrega ou se falhar. */
 function useUltimoApk() {
-  const [v, setV] = useState<{ build: number; url: string } | null>(null);
+  return useUltimas().apk;
+}
+function useUltimas() {
+  const [v, setV] = useState<{ apk: { build: number; url: string } | null; windows: { build: number; url: string } | null }>({ apk: null, windows: null });
   useEffect(() => {
     let vivo = true;
     fetch(`https://api.github.com/repos/${REPOSITORIO}/releases?per_page=20`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { if (vivo) setV(ultimoApk(j)); })
+      .then((j) => { if (vivo) setV({ apk: ultimoApk(j), windows: ultimoWindows(j) }); })
       .catch(() => {});
     return () => { vivo = false; };
   }, []);
@@ -46,7 +49,7 @@ export function AvisoDeAtualizacao() {
 
 /** Download do app Android e instalação no Windows; aparece destacado conforme o aparelho de quem entra. */
 export function Aplicativos() {
-  const ultimo = useUltimoApk();
+  const { apk: ultimo, windows: ultimoWin } = useUltimas();
   const plataforma = plataformaDe(navigator.userAgent);
   const [podeInstalar, setPodeInstalar] = useState(!!guardado);
   const [instalado, setInstalado] = useState(false);
@@ -74,7 +77,10 @@ export function Aplicativos() {
   );
   const windows = (
     <div className="space-y-2">
-      <p className="text-sm text-suave">Windows: instala como aplicativo (janela própria, ícone na área de trabalho). Atualiza sozinho a cada versão.</p>
+      <p className="text-sm text-suave">Windows: baixe o instalador (tela de instalação e atalho na área de trabalho). O app abre sempre na versão mais recente. Também dá para instalar direto do navegador:</p>
+      <Botao variante="primario" className="w-full" disabled={!ultimoWin} onClick={() => ultimoWin && abrir(ultimoWin.url)}>
+        {ultimoWin ? `Baixar instalador para Windows (1.${ultimoWin.build})` : "Procurando o instalador…"}
+      </Botao>
       {instalado ? <Aviso tom="ok">Painel Dev instalado neste computador.</Aviso> : podeInstalar ? (
         <Botao variante="primario" className="w-full" onClick={() => void instalarWeb()}>Instalar no Windows</Botao>
       ) : (

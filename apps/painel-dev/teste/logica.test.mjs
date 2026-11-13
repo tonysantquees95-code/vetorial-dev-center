@@ -95,3 +95,13 @@ test("aplicativos: build da tag, último APK e plataforma", () => {
   assert.equal(plataformaDe("Mozilla/5.0 (Linux; Android 14; Pixel)"), "android");
   assert.equal(plataformaDe("Mozilla/5.0 (Macintosh)"), "outra");
 });
+
+import { ultimoWindows } from "../src/logica.ts";
+test("aplicativos: último instalador do Windows", () => {
+  const r = [
+    { tag_name: "dev-1.7", assets: [{ name: "VenusDev.apk", browser_download_url: "https://x/7.apk" }] },
+    { tag_name: "dev-1.9", assets: [{ name: "VetorialDev-Setup.exe", browser_download_url: "https://x/9.exe" }] },
+  ];
+  assert.deepEqual(ultimoWindows(r), { build: 9, url: "https://x/9.exe" });
+  assert.equal(ultimoWindows([]), null);
+});

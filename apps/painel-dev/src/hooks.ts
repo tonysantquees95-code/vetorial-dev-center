@@ -10,11 +10,21 @@ export function useBusca<T>(buscar: () => Promise<T>, ms: number | null, chave: 
   f.current = buscar;
 
   const rodar = useCallback(async () => {
-    try {
-      setDado(await f.current());
-      setErro("");
-    } catch (e) {
-      setErro(e instanceof ErroApi ? e.message : "Não deu certo.");
+    // a 1ª chamada costuma falhar (servidor "acordando"/rede ainda subindo): tenta de novo sozinho antes de mostrar erro
+    for (let tentativa = 0; ; tentativa++) {
+      try {
+        setDado(await f.current());
+        setErro("");
+        break;
+      } catch (e) {
+        const passageiro = !(e instanceof ErroApi) || e.status === 0 || e.status >= 500;
+        if (passageiro && tentativa < 3) {
+          await new Promise((r) => setTimeout(r, 1200 * (tentativa + 1)));
+          continue;
+        }
+        setErro(e instanceof ErroApi ? e.message : "Não deu certo.");
+        break;
+      }
     }
     setCarregando(false);
   }, []);

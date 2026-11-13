@@ -1,0 +1,26 @@
+{
+  "name": "vetorial-dev-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Painel Dev da Vetorial Tech para Windows",
+  "author": "Vetorial Tech",
+  "main": "main.js",
+  "build": {
+    "appId": "tech.vetorial.paineldev",
+    "productName": "Vetorial Dev",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "offline.html"],
+    "win": { "icon": "build/icon.ico", "target": ["nsis"], "artifactName": "VetorialDev-Setup.${ext}" },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "runAfterFinish": true
+    }
+  },
+  "devDependencies": { "electron": "33.2.1", "electron-builder": "25.1.8" }
+}

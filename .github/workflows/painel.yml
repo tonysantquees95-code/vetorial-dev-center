@@ -119,8 +119,28 @@ jobs:
           name: venus-painel-dev-apk
           path: apps/painel-dev/android/app/build/outputs/apk/debug/VenusDev.apk
 
+  windows:
+    needs: verificar
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Gerar o instalador do Windows
+        working-directory: desktop
+        shell: bash
+        run: |
+          npm install --no-audit --no-fund
+          npx electron-builder --win nsis --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: venus-painel-dev-windows
+          path: desktop/dist/VetorialDev-Setup.exe
+          if-no-files-found: error
+
   publicar:
-    needs: apk
+    needs: [apk, windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -129,8 +149,12 @@ jobs:
         with:
           name: venus-painel-dev-apk
           path: apk
+      - uses: actions/download-artifact@v4
+        with:
+          name: venus-painel-dev-windows
+          path: apk
       - name: Publicar a versão
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "dev-1.${{ github.run_number }}" apk/VenusDev.apk --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "Vetorial Dev 1.${{ github.run_number }}" --notes "APK do Painel Dev (administrador). Baixe VenusDev.apk e toque nele para instalar."
+          gh release create "dev-1.${{ github.run_number }}" apk/VenusDev.apk apk/VetorialDev-Setup.exe --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "Vetorial Dev 1.${{ github.run_number }}" --notes "APK do Painel Dev (administrador). Android: baixe VenusDev.apk e toque nele. Windows: VetorialDev-Setup.exe instala com atalho na área de trabalho."
