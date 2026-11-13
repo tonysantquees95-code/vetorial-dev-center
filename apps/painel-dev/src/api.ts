@@ -88,7 +88,20 @@ export { ADMIN_EMAIL_PADRAO, normalizarUrl };
 
 // ------------------------------------------------------------------ cliente
 export function criarCliente(base: () => string, token: () => string, aoNegar: () => void) {
+  // leituras (GET) que falham na primeira tentativa (servidor frio, rede) repetem sozinhas antes de mostrar erro
   async function chamar<T>(metodo: string, caminho: string, corpo?: unknown, comToken = true): Promise<T> {
+    const esperas = metodo === "GET" ? [400, 1200, 2500] : [];
+    for (let i = 0; ; i++) {
+      try {
+        return await chamarUma<T>(metodo, caminho, corpo, comToken);
+      } catch (e) {
+        const temporario = e instanceof ErroApi && (e.status === 0 || e.status >= 500) && e.codigo !== "sem_endereco";
+        if (!temporario || i >= esperas.length) throw e;
+        await new Promise((r) => setTimeout(r, esperas[i]));
+      }
+    }
+  }
+  async function chamarUma<T>(metodo: string, caminho: string, corpo?: unknown, comToken = true): Promise<T> {
     const b = base();
     if (!b) throw new ErroApi(0, "sem_endereco", "Esse ambiente ainda não tem endereço. Configure em Ajustes.");
     let r: Response;
