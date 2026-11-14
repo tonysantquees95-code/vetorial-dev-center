@@ -118,6 +118,7 @@ function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>
     case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "vortex": return { android: { tipo: "app", app: "vortex-android" }, windows: { tipo: "app", app: "vortex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "velox": return { android: { tipo: "app", app: "velox-android" }, windows: { tipo: "app", app: "velox-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
+    case "drive": return { android: { tipo: "app", app: "drive-android" }, windows: { tipo: "breve" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "devcenter": { const painel = `${location.origin}${import.meta.env.BASE_URL}`; return { android: { tipo: "app", app: "dev" }, windows: { tipo: "breve" }, web: { tipo: "site", url: painel }, ios: { tipo: "site", url: painel, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } }; }
     default: return {};
   }
