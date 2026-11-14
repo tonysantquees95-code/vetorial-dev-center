@@ -108,13 +108,23 @@ const Mini = ({ rotulo, valor }: { rotulo: string; valor: string }) => (
 );
 
 type Destino = { tipo: "app"; app: string } | { tipo: "site"; url: string; nota?: string } | { tipo: "breve" };
-type Plataforma = "android" | "windows" | "web" | "ios";
-const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", web: "Versão web", ios: "iOS" };
+type Plataforma = "android" | "windows" | "mac" | "web" | "ios";
+const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", mac: "Mac", web: "Versão web", ios: "iOS" };
+
+/** Plataforma do aparelho que está usando o painel: o botão dela vem primeiro (num PC, baixar o APK não serve para nada). */
+function plataformaAtual(): Plataforma | undefined {
+  const ua = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  if (/Android/i.test(ua)) return "android";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
+  if (/Windows/i.test(ua)) return "windows";
+  if (/Macintosh/i.test(ua)) return "mac";
+  return undefined;
+}
 
 /** Onde cada projeto é usado. O que ainda não existe fica como atalho "em breve" e vira botão de verdade quando sair. */
 function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>> {
   switch (id) {
-    case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
+    case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, mac: { tipo: "app", app: "mac" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
     case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "vortex": return { android: { tipo: "app", app: "vortex-android" }, windows: { tipo: "app", app: "vortex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "velox": return { android: { tipo: "app", app: "velox-android" }, windows: { tipo: "app", app: "velox-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
@@ -129,7 +139,8 @@ function Plataformas({ p }: { p: Projeto }) {
   const [msg, setMsg] = useState("");
   const [ocupado, setOcupado] = useState("");
   const d = destinos(p.id, endereco.replace(/\/+$/, ""));
-  const ordem = (["android", "windows", "web", "ios"] as Plataforma[]).filter((k) => d[k]);
+  const aqui = plataformaAtual();
+  const ordem = (["android", "windows", "mac", "web", "ios"] as Plataforma[]).filter((k) => d[k]).sort((a, b) => Number(b === aqui) - Number(a === aqui));
   if (ordem.length === 0) return null;
   async function baixar(app: string) {
     setOcupado(app);
@@ -155,7 +166,7 @@ function Plataformas({ p }: { p: Projeto }) {
           return (
             <div key={k} className="flex flex-col justify-between gap-2 rounded-xl border border-borda bg-white/3 px-3 py-2">
               <div className="min-w-0">
-                <div className="text-sm">{ROTULOS[k]}</div>
+                <div className="text-sm">{ROTULOS[k]}{k === aqui && <span className="ml-1.5 text-xs text-suave">· este aparelho</span>}</div>
                 <div className="num text-xs text-suave">{detalhe}</div>
               </div>
               <Botao variante={pronto ? "primario" : undefined} disabled={!pronto || ocupado === (x.tipo === "app" ? x.app : "")}
