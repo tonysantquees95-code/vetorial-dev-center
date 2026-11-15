@@ -121,7 +121,23 @@ export function LinksDaVenus() {
       { rotulo: "Vortex para Windows", detalhe: "Instalador do Vortex.", url: `${base}/vortex/windows` },
       { rotulo: "Página de download do Vortex", detalhe: "Página curta com os dois botões.", url: `${base}/vortex`, abrir: true },
     ] },
+    { titulo: "Voxix", itens: [
+      { rotulo: "Voxix para Android", detalhe: "APK do chat para gamers.", url: `${base}/voxix/android` },
+      { rotulo: "Voxix para Windows", detalhe: "Instalador do Voxix.", url: `${base}/voxix/windows` },
+      { rotulo: "Página de download do Voxix", detalhe: "Página curta com os dois botões.", url: `${base}/voxix`, abrir: true },
+    ] },
+    { titulo: "Velox", itens: [
+      { rotulo: "Velox para Android", detalhe: "APK da busca e central gamer.", url: `${base}/velox/android` },
+      { rotulo: "Velox para Windows", detalhe: "Instalador do Velox.", url: `${base}/velox/windows` },
+      { rotulo: "Página de download do Velox", detalhe: "Página curta com os dois botões.", url: `${base}/velox`, abrir: true },
+    ] },
+    { titulo: "Vetorial Drive", itens: [
+      { rotulo: "Vetorial Drive para Android", detalhe: "APK dos seus arquivos na nuvem.", url: `${base}/drive/android` },
+      { rotulo: "Página de download do Vetorial Drive", detalhe: "Página curta com o botão de baixar.", url: `${base}/drive`, abrir: true },
+    ] },
     { titulo: "Administração", itens: [
+      { rotulo: "Painel Dev para Android", detalhe: "APK do painel de administrador.", url: `${base}/paineldev/android` },
+      { rotulo: "Painel Dev para Windows", detalhe: "Instalador do painel de administrador.", url: `${base}/paineldev/windows` },
       { rotulo: "Painel Dev (site)", detalhe: "Abre o painel em qualquer navegador e pode ser instalado como app.", url: `${location.origin}${import.meta.env.BASE_URL}`, abrir: true },
     ] },
   ];
