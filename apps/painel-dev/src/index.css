@@ -40,7 +40,7 @@ button { cursor: pointer; }
 input[type="range"] { accent-color: var(--color-ciano); }
 
 /* V vivo: pulsa devagar, como o orbe da Vênus */
-.logo-vivo { animation: vivo 4.8s ease-in-out infinite; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-ciano) 55%, transparent)); }
+.logo-vivo { object-fit: contain; animation: vivo 4.8s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(236, 111, 214, .45)); }
 .logo-vivo-brilho { transform-origin: 50% 48%; animation: brilho 4.8s ease-in-out infinite; }
 @keyframes vivo { 0%, 100% { transform: scale(0.97); } 50% { transform: scale(1.05); } }
 @keyframes brilho { 0%, 100% { opacity: .55; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.12); } }

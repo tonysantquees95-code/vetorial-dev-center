@@ -17,7 +17,7 @@ export function useBusca<T>(buscar: () => Promise<T>, ms: number | null, chave: 
         setErro("");
         break;
       } catch (e) {
-        const passageiro = !(e instanceof ErroApi) || e.status === 0 || e.status >= 500;
+        const passageiro = !(e instanceof ErroApi) || e.status === 0 || e.status === 408 || e.status === 429 || e.status >= 500;
         if (passageiro && tentativa < 3) {
           await new Promise((r) => setTimeout(r, 1200 * (tentativa + 1)));
           continue;

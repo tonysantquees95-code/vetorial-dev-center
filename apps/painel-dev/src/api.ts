@@ -90,12 +90,12 @@ export { ADMIN_EMAIL_PADRAO, normalizarUrl };
 export function criarCliente(base: () => string, token: () => string, aoNegar: () => void) {
   // leituras (GET) que falham na primeira tentativa (servidor frio, rede) repetem sozinhas antes de mostrar erro
   async function chamar<T>(metodo: string, caminho: string, corpo?: unknown, comToken = true): Promise<T> {
-    const esperas = metodo === "GET" ? [400, 1200, 2500] : [];
+    const esperas = metodo === "GET" ? [400, 1200, 2500, 4000] : [];
     for (let i = 0; ; i++) {
       try {
         return await chamarUma<T>(metodo, caminho, corpo, comToken);
       } catch (e) {
-        const temporario = e instanceof ErroApi && (e.status === 0 || e.status >= 500) && e.codigo !== "sem_endereco";
+        const temporario = e instanceof ErroApi && (e.status === 0 || e.status === 408 || e.status === 429 || e.status >= 500) && e.codigo !== "sem_endereco";
         if (!temporario || i >= esperas.length) throw e;
         await new Promise((r) => setTimeout(r, esperas[i]));
       }
@@ -109,15 +109,18 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
       r = await fetch(`${b}${caminho}`, {
         method: metodo,
         headers: { ...(corpo !== undefined ? { "content-type": "application/json" } : {}), ...(comToken && token() ? { authorization: `Bearer ${token()}` } : {}) },
-        body: corpo !== undefined ? JSON.stringify(corpo) : undefined
+        body: corpo !== undefined ? JSON.stringify(corpo) : undefined,
+        // sem limite, uma resposta que trava deixava a tela carregando para sempre; com ele, a leitura é repetida
+        signal: AbortSignal.timeout(metodo === "GET" ? 25_000 : 60_000)
       });
-    } catch {
+    } catch (e) {
+      if (e instanceof DOMException && (e.name === "TimeoutError" || e.name === "AbortError")) throw new ErroApi(0, "demorou", "O servidor demorou demais para responder.");
       throw new ErroApi(0, "sem_conexao", "Sem conexão com o servidor desse ambiente.");
     }
     const d = await r.json().catch(() => ({}));
     if (!r.ok) {
       if (r.status === 401 && comToken) aoNegar();
-      throw new ErroApi(r.status, d.codigo ?? "erro", d.error ?? "Algo deu errado.", d);
+      throw new ErroApi(r.status, d.codigo ?? "erro", `${d.error ?? "Algo deu errado."}${r.status >= 500 ? ` (erro ${r.status}${d.codigo ? `, ${d.codigo}` : ""})` : ""}`, d);
     }
     return d as T;
   }
