@@ -38,6 +38,18 @@ export interface Trafego {
 }
 export interface SessaoAtiva { sessao: string; usuario: string; email: string; nome: string; plataforma: string; criado: number; ultimoPing: number }
 export interface ContaDisp { usuario: string; email: string; nome: string; dispositivos: number; ativas: number; sessoes: SessaoAtiva[] }
+export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number }
+export interface UsuarioDoPainel {
+  id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
+  situacao: "dono" | "pagante" | "teste" | "gratis"; pagante: boolean; pacote: string; ativoAte: number;
+  apps: Record<string, UsuarioApp>;
+  sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
+}
+export interface Usuarios {
+  agora: number; apps: string[]; maxDispositivos: number; maxAtivas: number;
+  total: number; pagantes: number; emTeste: number; soGratis: number; usandoAgora: number; semRecuperacao: number;
+  usuarios: UsuarioDoPainel[];
+}
 export interface Dispositivos { agora: number; maxDispositivos: number; maxAtivas: number; ttlMs: number; sessoesAtivas: number; contas: ContaDisp[] }
 export interface ConfigDev { escutaContinua: boolean; provedores: Record<string, { ligado: boolean; chaveConfigurada: boolean }>; repos: { vindex: string; vortex: string } }
 export interface EstadoCache { exato: boolean; semantico: boolean; acertos24h: number; chamadas24h: number; taxa: number }
@@ -146,6 +158,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     ferramentas: () => chamar<Ferramentas>("GET", "/dev/ferramentas"),
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
+    usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
     encerrarSessao: (id: string) => chamar<{ ok: boolean }>("POST", `/dev/sessoes/${id}/encerrar`, {}),
     cofreEstado: () => chamar<EstadoCofre>("GET", "/dev/cofre/estado"),
     cofreIniciar: (senha: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/iniciar", { senha }),

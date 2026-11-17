@@ -5,7 +5,7 @@ import { AvisoDeAtualizacao, LinksDaVenus } from "./telas/Aplicativos";
 import { SeletorDeAmbiente } from "./telas/Ambiente";
 import { Bi } from "./telas/Bi";
 import { Cofre } from "./telas/Cofre";
-import { Dispositivos } from "./telas/Dispositivos";
+import { Usuarios } from "./telas/Usuarios";
 import { Ferramentas } from "./telas/Ferramentas";
 import { Login } from "./telas/Login";
 import { Projetos } from "./telas/Projetos";
@@ -46,7 +46,7 @@ const ABAS = [
   { id: "bi", rotulo: "BI", detalhe: "Números e gráficos", icone: "grafico", tela: Bi },
   { id: "ferramentas", rotulo: "Funções", detalhe: "IA e automações", icone: "chip", tela: Ferramentas },
   { id: "trafego", rotulo: "Tráfego", detalhe: "Uso e atividade", icone: "pulso", tela: Trafego },
-  { id: "dispositivos", rotulo: "Aparelhos", detalhe: "Onde o app está instalado", icone: "celular", tela: Dispositivos },
+  { id: "usuarios", rotulo: "Usuários", detalhe: "Quem usa cada aplicativo", icone: "pessoas", tela: Usuarios },
   { id: "cofre", rotulo: "Cofre", detalhe: "Chaves e senhas das APIs", icone: "cadeado", tela: Cofre },
   { id: "ajustes", rotulo: "Ajustes", detalhe: "Conta, ambiente e cache", icone: "engrenagem", tela: Ajustes }
 ] as const;
