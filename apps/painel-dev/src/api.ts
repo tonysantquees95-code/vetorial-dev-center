@@ -133,7 +133,15 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     entrar: (email: string, senha: string, dispositivo: object, extra: { encerrar?: string; remover?: string } = {}) => chamar<SessaoAdmin>("POST", "/dev/entrar", { email, senha, dispositivo, ...extra }, false),
     primeiroAcesso: (senha: string, convite: string, dispositivo: object) => chamar<SessaoAdmin>("POST", "/dev/primeiro-acesso", { senha, convite, dispositivo }, false),
     sair: () => chamar<{ ok: boolean }>("POST", "/dev/sair", {}),
-    painel: () => chamar<Painel>("GET", "/dev/painel"),
+    // lista rápida (sem GitHub) + um projeto por chamada: o Cloudflare limita as consultas externas de cada chamada do servidor
+    painel: async (): Promise<Painel> => {
+      const lista = await chamar<Painel>("GET", "/dev/painel?rapido=1");
+      const projetos = await Promise.all(lista.projetos.map(async (p) => {
+        try { return (await chamar<Painel>("GET", `/dev/painel?projeto=${encodeURIComponent(p.id)}`)).projetos[0] ?? p; }
+        catch { return { ...p, aviso: "Não consegui ler o GitHub agora. Toque em atualizar." }; }
+      }));
+      return { ...lista, projetos };
+    },
     bi: (dias: number) => chamar<Bi>("GET", `/dev/bi?dias=${dias}`),
     ferramentas: () => chamar<Ferramentas>("GET", "/dev/ferramentas"),
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
