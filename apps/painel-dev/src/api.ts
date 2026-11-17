@@ -41,13 +41,13 @@ export interface ContaDisp { usuario: string; email: string; nome: string; dispo
 export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number }
 export interface UsuarioDoPainel {
   id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
-  situacao: "dono" | "pagante" | "teste" | "gratis"; pagante: boolean; pacote: string; ativoAte: number;
+  situacao: "admin" | "pagante" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
   apps: Record<string, UsuarioApp>;
   sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
 }
 export interface Usuarios {
   agora: number; apps: string[]; maxDispositivos: number; maxAtivas: number;
-  total: number; pagantes: number; emTeste: number; soGratis: number; usandoAgora: number; semRecuperacao: number;
+  total: number; pagantes: number; bloqueados: number; emTeste: number; soGratis: number; usandoAgora: number; semRecuperacao: number;
   usuarios: UsuarioDoPainel[];
 }
 export interface Dispositivos { agora: number; maxDispositivos: number; maxAtivas: number; ttlMs: number; sessoesAtivas: number; contas: ContaDisp[] }
@@ -159,6 +159,8 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
+    bloquearUsuario: (id: string, bloquear: boolean) => chamar<{ ok: boolean }>("POST", `/dev/usuarios/${id}/${bloquear ? "bloquear" : "desbloquear"}`, {}),
+    excluirUsuario: (id: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${id}`),
     encerrarSessao: (id: string) => chamar<{ ok: boolean }>("POST", `/dev/sessoes/${id}/encerrar`, {}),
     cofreEstado: () => chamar<EstadoCofre>("GET", "/dev/cofre/estado"),
     cofreIniciar: (senha: string) => chamar<{ ok: boolean }>("POST", "/dev/cofre/iniciar", { senha }),
