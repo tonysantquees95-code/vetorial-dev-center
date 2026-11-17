@@ -41,6 +41,10 @@ export function Usuarios() {
     setMsg("");
     try { await api.bloquearUsuario(id, sim); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
   }
+  async function removerAparelho(usuario: string, aparelho: string) {
+    setMsg("");
+    try { await api.removerAparelho(usuario, aparelho); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
+  }
   async function excluir(id: string) {
     setMsg("");
     try { await api.excluirUsuario(id); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
@@ -61,13 +65,14 @@ export function Usuarios() {
       </div>
       <input className="min-h-11 w-full rounded-xl border border-borda bg-black/20 px-3 text-sm" placeholder="Buscar por nome ou e-mail" value={busca} onChange={(e) => setBusca(e.target.value)} />
       {lista.length === 0 && <Vazio>{dado.total === 0 ? "Nenhuma conta do Vetorial ID ainda." : "Nenhum usuário nesse filtro."}</Vazio>}
-      <div className="grid gap-3 lg:grid-cols-2">{lista.map((u) => <Usuario key={u.id} u={u} apps={dado.apps} aoEncerrar={encerrar} aoBloquear={bloquear} aoExcluir={excluir} />)}</div>
+      <div className="grid gap-3 lg:grid-cols-2">{lista.map((u) => <Usuario key={u.id} u={u} apps={dado.apps} aoEncerrar={encerrar} aoBloquear={bloquear} aoExcluir={excluir} aoRemoverAparelho={removerAparelho} />)}</div>
     </div>
   );
 }
 
-function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir }: { u: UsuarioDoPainel; apps: string[]; aoEncerrar: (id: string) => void; aoBloquear: (id: string, sim: boolean) => void; aoExcluir: (id: string) => void }) {
+function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho }: { u: UsuarioDoPainel; apps: string[]; aoEncerrar: (id: string) => void; aoBloquear: (id: string, sim: boolean) => void; aoExcluir: (id: string) => void; aoRemoverAparelho: (usuario: string, aparelho: string) => void }) {
   const s = SITUACAO[u.situacao];
+  const [aberto, setAberto] = useState<string | null>(null);
   const usados = apps.flatMap((a) => { const x = u.apps[a]; return x ? [{ a, x }] : []; });
   return (
     <Cartao titulo={u.nome || u.email} descricao={u.nome ? u.email : undefined} acao={<div className="flex flex-wrap justify-end gap-1">{u.bloqueado && <Selo tom="erro">Bloqueado</Selo>}<Selo tom={s.tom}>{s.rotulo}</Selo></div>}>
@@ -78,9 +83,21 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir }: { u: UsuarioDoP
         <ul className="space-y-1.5">
           {usados.map(({ a, x }) => {
             return (
-              <li key={a} className="flex items-center justify-between gap-2 rounded-xl border border-borda bg-white/3 px-3 py-2 text-sm">
-                <span>{NOME_DO_APP[a] ?? a}</span>
-                <span className="num text-xs text-suave">{x.dispositivos} {x.dispositivos === 1 ? "aparelho" : "aparelhos"} · <span className={x.ativas ? "text-ok" : ""}>{x.ativas} em uso agora</span></span>
+              <li key={a} className="rounded-xl border border-borda bg-white/3 px-3 py-2 text-sm">
+                <button type="button" className="flex w-full items-center justify-between gap-2 text-left" onClick={() => setAberto(aberto === a ? null : a)} aria-expanded={aberto === a}>
+                  <span>{NOME_DO_APP[a] ?? a}</span>
+                  <span className="num text-xs text-suave">{x.dispositivos} {x.dispositivos === 1 ? "aparelho" : "aparelhos"} · <span className={x.ativas ? "text-ok" : ""}>{x.ativas} em uso agora</span> {aberto === a ? "▴" : "▾"}</span>
+                </button>
+                {aberto === a && (
+                  <ul className="mt-2 space-y-2 border-t border-borda pt-2">
+                    {x.aparelhos.map((ap) => (
+                      <li key={ap.id} className="flex items-center justify-between gap-2 text-xs">
+                        <span className="min-w-0 text-suave"><span className="text-texto">{ap.nome || ap.plataforma}</span> · {ap.plataforma} · {ap.emUso ? "em uso agora" : `visto ${haQuanto(ap.ultimo)}`}</span>
+                        {!ap.emUso && <BotaoConfirmar rotulo="Remover" confirmacao="Confirmar" aoConfirmar={() => aoRemoverAparelho(u.id, ap.id)} />}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             );
           })}

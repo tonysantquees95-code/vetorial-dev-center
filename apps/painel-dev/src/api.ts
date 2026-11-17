@@ -38,7 +38,8 @@ export interface Trafego {
 }
 export interface SessaoAtiva { sessao: string; usuario: string; email: string; nome: string; plataforma: string; criado: number; ultimoPing: number }
 export interface ContaDisp { usuario: string; email: string; nome: string; dispositivos: number; ativas: number; sessoes: SessaoAtiva[] }
-export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number }
+export interface AparelhoDoApp { id: string; nome: string; plataforma: string; criado: number; ultimo: number; emUso: boolean }
+export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number; aparelhos: AparelhoDoApp[] }
 export interface UsuarioDoPainel {
   id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
   situacao: "admin" | "pagante" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
@@ -160,6 +161,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
     bloquearUsuario: (id: string, bloquear: boolean) => chamar<{ ok: boolean }>("POST", `/dev/usuarios/${id}/${bloquear ? "bloquear" : "desbloquear"}`, {}),
+    removerAparelho: (usuario: string, aparelho: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${usuario}/aparelhos/${aparelho}`),
     excluirUsuario: (id: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${id}`),
     encerrarSessao: (id: string) => chamar<{ ok: boolean }>("POST", `/dev/sessoes/${id}/encerrar`, {}),
     cofreEstado: () => chamar<EstadoCofre>("GET", "/dev/cofre/estado"),
