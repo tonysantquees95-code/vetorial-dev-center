@@ -131,6 +131,11 @@ export function LinksDaVenus() {
       { rotulo: "Voxix para Windows", detalhe: "Instalador do Voxix.", url: `${base}/voxix/windows` },
       { rotulo: "Página de download do Voxix", detalhe: "Página curta do Voxix (por enquanto, “em breve”).", url: `${base}/voxix`, abrir: true },
     ] },
+    { titulo: "Vyntem", itens: [
+      { rotulo: "Vyntem para Android", detalhe: "APK do controle de gastos com IA.", url: `${base}/vyntem/android` },
+      { rotulo: "Vyntem para Windows", detalhe: "Instalador do Vyntem.", url: `${base}/vyntem/windows` },
+      { rotulo: "Página de download do Vyntem", detalhe: "Página curta com os dois botões.", url: `${base}/vyntem`, abrir: true },
+    ] },
     { titulo: "Velox", itens: [
       { rotulo: "Velox para Android", detalhe: "APK da busca e central gamer.", url: `${base}/velox/android` },
       { rotulo: "Velox para Windows", detalhe: "Instalador do Velox.", url: `${base}/velox/windows` },
