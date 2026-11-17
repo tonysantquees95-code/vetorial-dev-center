@@ -129,7 +129,7 @@ function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>
     case "vortex": return { android: { tipo: "app", app: "vortex-android" }, windows: { tipo: "app", app: "vortex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "velox": return { android: { tipo: "app", app: "velox-android" }, windows: { tipo: "app", app: "velox-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "drive": return { android: { tipo: "app", app: "drive-android" }, windows: { tipo: "breve" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
-    case "voxix": return { android: { tipo: "app", app: "voxix-android" }, windows: { tipo: "app", app: "voxix-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
+    case "voxix": return { android: { tipo: "app", app: "voxix-android" }, windows: { tipo: "app", app: "voxix-windows" }, web: { tipo: "site", url: `${site}/voxix-app/` }, ios: { tipo: "site", url: `${site}/voxix-app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
     case "devcenter": { const painel = `${location.origin}${import.meta.env.BASE_URL}`; return { android: { tipo: "app", app: "dev" }, windows: { tipo: "breve" }, web: { tipo: "site", url: painel }, ios: { tipo: "site", url: painel, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } }; }
     default: return {};
   }
@@ -170,7 +170,7 @@ function Plataformas({ p }: { p: Projeto }) {
                 <div className="text-sm">{ROTULOS[k]}{k === aqui && <span className="ml-1.5 text-xs text-suave">· este aparelho</span>}</div>
                 <div className="num text-xs text-suave">{detalhe}</div>
               </div>
-              <Botao variante={pronto ? "primario" : undefined} disabled={!pronto || ocupado === (x.tipo === "app" ? x.app : "")}
+              <Botao variante={pronto ? "primario" : undefined} disabled={!pronto || (x.tipo === "app" && ocupado === x.app)}
                 aria-label={`${x.tipo === "site" ? "Abrir" : "Baixar"} ${p.nome} para ${ROTULOS[k]}`}
                 onClick={() => { if (x.tipo === "site") window.open(x.url, "_blank", "noopener,noreferrer"); else if (x.tipo === "app") void baixar(x.app); }}>
                 {x.tipo === "site" ? "Abrir" : <><Icone nome="baixar" tam={16} />{x.tipo === "breve" ? "Em breve" : "Baixar"}</>}

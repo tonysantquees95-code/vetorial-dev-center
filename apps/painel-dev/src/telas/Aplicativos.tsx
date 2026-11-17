@@ -103,12 +103,16 @@ export function LinksDaVenus() {
   const [msg, setMsg] = useState("");
   const base = endereco.replace(/\/+$/, "");
   const grupos: { titulo: string; itens: { rotulo: string; detalhe: string; url: string; abrir?: boolean }[] }[] = [
+    { titulo: "Vetorial Tech", itens: [
+      { rotulo: "Site da Vetorial Tech", detalhe: "A página da suíte: apps, planos, teste grátis e entrar.", url: `${base}/`, abrir: true },
+    ] },
+    { titulo: "Minha conta", itens: [
+      { rotulo: "Minha conta (Vetorial ID)", detalhe: "Assinatura, pacotes, aparelhos e downloads.", url: `${base}/conta.html`, abrir: true },
+    ] },
     { titulo: "Vênus", itens: [
-      { rotulo: "Site da Vênus", detalhe: "A página de vendas: planos, teste grátis e entrar.", url: `${base}/`, abrir: true },
       { rotulo: "Vênus no navegador (iPhone)", detalhe: "Para iPhone e qualquer navegador. No Safari: Compartilhar › Adicionar à Tela de Início.", url: `${base}/app/`, abrir: true },
       { rotulo: "Vênus para Android", detalhe: "APK: baixe e toque no arquivo para instalar.", url: `${base}/venus/android` },
       { rotulo: "Vênus para Windows", detalhe: "Instalador: abra no computador.", url: `${base}/venus/windows` },
-      { rotulo: "Minha conta (Vetorial ID)", detalhe: "Assinatura, pacotes, aparelhos e downloads.", url: `${base}/conta.html`, abrir: true },
       { rotulo: "Página de download da Vênus", detalhe: "Uma página curta com todos os botões, boa para mandar a clientes.", url: `${base}/venus`, abrir: true },
     ] },
     { titulo: "Vindex", itens: [
@@ -122,9 +126,10 @@ export function LinksDaVenus() {
       { rotulo: "Página de download do Vortex", detalhe: "Página curta com os dois botões.", url: `${base}/vortex`, abrir: true },
     ] },
     { titulo: "Voxix", itens: [
+      { rotulo: "Voxix no navegador (iPhone)", detalhe: "Para iPhone e qualquer navegador. No Safari: Compartilhar › Adicionar à Tela de Início.", url: `${base}/voxix-app/`, abrir: true },
       { rotulo: "Voxix para Android", detalhe: "APK do chat para gamers.", url: `${base}/voxix/android` },
       { rotulo: "Voxix para Windows", detalhe: "Instalador do Voxix.", url: `${base}/voxix/windows` },
-      { rotulo: "Página de download do Voxix", detalhe: "Página curta com os dois botões.", url: `${base}/voxix`, abrir: true },
+      { rotulo: "Página de download do Voxix", detalhe: "Página curta do Voxix (por enquanto, “em breve”).", url: `${base}/voxix`, abrir: true },
     ] },
     { titulo: "Velox", itens: [
       { rotulo: "Velox para Android", detalhe: "APK da busca e central gamer.", url: `${base}/velox/android` },
