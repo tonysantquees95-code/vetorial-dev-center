@@ -60,7 +60,7 @@ export function Usuarios() {
 
 function Usuario({ u, apps, aoEncerrar }: { u: UsuarioDoPainel; apps: string[]; aoEncerrar: (id: string) => void }) {
   const s = SITUACAO[u.situacao];
-  const usados = apps.filter((a) => u.apps[a]);
+  const usados = apps.flatMap((a) => { const x = u.apps[a]; return x ? [{ a, x }] : []; });
   return (
     <Cartao titulo={u.nome || u.email} descricao={u.nome ? u.email : undefined} acao={<Selo tom={s.tom}>{s.rotulo}</Selo>}>
       <p className="num mb-3 text-xs text-suave">
@@ -68,8 +68,7 @@ function Usuario({ u, apps, aoEncerrar }: { u: UsuarioDoPainel; apps: string[]; 
       </p>
       {usados.length === 0 ? <p className="text-xs text-suave">Ainda não vinculou nenhum aparelho.</p> : (
         <ul className="space-y-1.5">
-          {usados.map((a) => {
-            const x = u.apps[a];
+          {usados.map(({ a, x }) => {
             return (
               <li key={a} className="flex items-center justify-between gap-2 rounded-xl border border-borda bg-white/3 px-3 py-2 text-sm">
                 <span>{NOME_DO_APP[a] ?? a}</span>
