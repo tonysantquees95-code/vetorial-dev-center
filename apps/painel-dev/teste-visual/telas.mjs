@@ -66,7 +66,24 @@ function conferirNaPagina() {
       if (r.bottom > vh + 1 || r.top < -1) problemas.push(`o botão "${nome(b)}" fica fora da tela e não dá para alcançar`);
     }
   }
-  return [...new Set(problemas)];
+  // avisos (não reprovam a publicação, mas aparecem no relatório): contraste baixo e botão pequeno para o dedo
+  const avisos = [];
+  const cor = (s) => { const k = s.match(/^color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)(?: \/ ([\d.]+))?\)/); if (k) return { r: k[1] * 255, g: k[2] * 255, b: k[3] * 255, a: k[4] === undefined ? 1 : Number(k[4]) }; const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const [r, g, b, a = 1] = m[1].split(/[ ,\/]+/).map(Number); return { r, g, b, a }; };
+  const lum = ({ r, g, b }) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+  const fundoDe = (e) => { for (let x = e; x; x = x.parentElement) { const s = getComputedStyle(x); if (s.backgroundImage !== "none") return null; const bruto = s.backgroundColor; if (bruto === "rgba(0, 0, 0, 0)" || bruto === "transparent") continue; const c = cor(bruto); if (!c) return null; if (c.a >= 0.5) return c; } return { r: 0, g: 0, b: 0 }; };
+  let pior = null;
+  for (const e of document.querySelectorAll("button, a, p, span, label, h1, h2, h3, li, b")) {
+    if (!visivel(e) || ![...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+    const f = fundoDe(e), c = cor(getComputedStyle(e).color); if (!f || !c || c.a < 0.95) continue;
+    const l1 = lum(c), l2 = lum(f), razao = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    if (razao < 3 && (!pior || razao < pior.razao)) pior = { razao, texto: nome(e) };
+  }
+  if (pior) avisos.push(`contraste baixo (${pior.razao.toFixed(1)}:1) em "${pior.texto}"`);
+  if (vw <= 768) {
+    const pequenos = [...document.querySelectorAll("button, a[href], [role=button]")].filter((b) => { if (!visivel(b)) return false; const r = b.getBoundingClientRect(); if (r.right <= 1 || r.left >= vw - 1 || r.top >= vh) return false; return r.height < 32 && r.width < 44 || r.height < 24; });
+    if (pequenos.length) avisos.push(`${pequenos.length} botão(ões) pequeno(s) para o dedo, ex.: "${nome(pequenos[0])}"`);
+  }
+  return { problemas: [...new Set(problemas)], avisos };
 }
 
 async function abrir(browser, w, h, modo) {
@@ -92,7 +109,7 @@ const ajuda = {
   async aba(p, rotulo) {
     const lateral = p.getByRole("navigation", { name: "Seções" });
     const exato = (n) => n.getByRole("button", { name: rotulo, exact: true }).first();
-    const existe = await p.getByRole("navigation", { name: /^(Seções|Menu)$/ }).getByRole("button", { name: rotulo, exact: true }).count();
+    const existe = await p.getByRole("navigation", { name: /^(Seções|Menu)$/, includeHidden: true }).getByRole("button", { name: rotulo, exact: true, includeHidden: true }).count();
     if (!existe) throw new Error("PULAR: aba não existe nesta versão");
     if (await lateral.isVisible().catch(() => false)) await exato(lateral).click();
     else {
@@ -107,6 +124,7 @@ const ajuda = {
 const preview = spawn(process.execPath, [join(dirname(createRequire(import.meta.url).resolve("vite/package.json")), "bin/vite.js"), "preview", "--port", String(PORTA), "--strictPort"], { stdio: "ignore", cwd: fileURLToPath(new URL("..", import.meta.url)) });
 const cromo = process.env.CHROME || ["/usr/bin/google-chrome", "C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"].find(existsSync);
 let falhas = 0, total = 0;
+const avisosTotal = new Map();
 try {
   for (let i = 0; i < 40; i++) { try { if ((await fetch(`http://localhost:${PORTA}/`)).ok) break; } catch { /* ainda subindo */ } await new Promise((r) => setTimeout(r, 250)); }
   const browser = await chromium.launch(cromo ? { executablePath: cromo } : { channel: "chrome" });
@@ -114,16 +132,17 @@ try {
     for (const [nome, modo, passos] of config.cenarios.filter(([n]) => !process.env.TELA || n === process.env.TELA)) {
       total++;
       const { ctx, p, erros } = await abrir(browser, w, h, modo);
-      let problemas = [];
+      let problemas = [], avisos = [];
       try {
         await passos(p, ajuda);
         await p.waitForTimeout(150);
-        problemas = await p.evaluate(conferirNaPagina);
+        ({ problemas, avisos } = await p.evaluate(conferirNaPagina));
       } catch (e) {
         if (String(e.message).startsWith("PULAR")) { total--; await ctx.close(); continue; }
         problemas = [`não consegui abrir a tela: ${String(e.message).split("\n")[0]}`]; if (process.env.DEPURAR) console.log(e.message);
       }
       problemas.push(...erros);
+      for (const av of avisos) { const k = `${nome}: ${av.replace(/\d+ botão/, "N botão").replace(/\(\d+(\.\d+)?:1\)/, "")}`; if (!avisosTotal.has(k)) avisosTotal.set(k, []); avisosTotal.get(k).push(tam); }
       await p.screenshot({ path: `${FOTOS}${nome}__${tam}.png` });
       if (problemas.length) { falhas++; console.log(`✗ ${nome} em ${tam} (${w}x${h}): ${problemas.join("; ")}`); } else console.log(`✓ ${nome} em ${tam}`);
       await ctx.close();
@@ -131,5 +150,6 @@ try {
   }
   await browser.close();
 } finally { preview.kill(); }
+if (avisosTotal.size) { console.log("\nAvisos (não reprovam):"); for (const [k, v] of avisosTotal) console.log(`⚠ ${k} — em ${v.length} tamanho(s)`); }
 console.log(`\n${total - falhas}/${total} telas ok`);
 process.exit(falhas ? 1 : 0);
