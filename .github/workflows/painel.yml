@@ -102,6 +102,12 @@ jobs:
               }
           }
           JAVA
+      # Cada versão leva um número novo (antes era sempre 1): sem isso o launcher do Android continuava mostrando o ícone antigo em cache.
+      - name: Numerar a versão do APK
+        working-directory: apps/painel-dev/android
+        run: |
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/; s/versionName \"[^\"]*\"/versionName \"1.${{ github.run_number }}\"/" app/build.gradle
+          grep -n "versionCode\|versionName" app/build.gradle
       - name: Compilar o APK
         working-directory: apps/painel-dev/android
         run: |
