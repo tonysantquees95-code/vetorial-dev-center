@@ -23,6 +23,16 @@ jobs:
           node-version: 22
       - run: npm install --no-audit --no-fund
       - run: npm run chaves && npm run test && npm run typecheck
+      - name: Teste visual (telas em vários tamanhos)
+        run: npm run build && npm run test:visual -w @venus/painel-dev
+        continue-on-error: true # só avisa por enquanto: ainda há telas a corrigir (veja o relatório)
+      - name: Guardar as fotos das telas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fotos-das-telas
+          path: apps/painel-dev/teste-visual/fotos/
+          retention-days: 7
       - name: Gerar o site (Pages)
         run: npm run build
         env:

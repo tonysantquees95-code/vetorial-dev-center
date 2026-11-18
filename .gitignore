@@ -2,3 +2,4 @@ node_modules
 dist
 android
 .env
+apps/painel-dev/teste-visual/fotos/

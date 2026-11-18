@@ -9,3 +9,6 @@ Site (PWA): https://tonysantquees95-code.github.io/vetorial-dev-center/ · APK D
 - O servidor (Cloudflare Worker + D1) fica no repositório da Vênus; este painel só o consome.
 
 `npm run dev` · `npm run verificar`. Variável `BASE_URL` define o endereço base do site (Pages usa `/vetorial-dev-center/`).
+
+## Teste visual das telas
+`npm run build && npm run test:visual -w @venus/painel-dev` abre o painel em 7 tamanhos de tela e confere cortes e rolagem (config em `apps/painel-dev/teste-visual/config.mjs`).
