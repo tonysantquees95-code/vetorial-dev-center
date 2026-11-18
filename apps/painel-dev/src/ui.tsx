@@ -48,8 +48,8 @@ export function Cartao({ titulo, descricao, acao, children, className = "" }: { 
       {(titulo || acao) && (
         <header className="mb-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            {titulo && <h2 className="text-[15px] font-semibold leading-tight">{titulo}</h2>}
-            {descricao && <p className="mt-1 text-xs leading-relaxed text-suave">{descricao}</p>}
+            {titulo && <h2 className="text-[15px] font-semibold leading-tight [overflow-wrap:anywhere]">{titulo}</h2>}
+            {descricao && <p className="mt-1 text-xs leading-relaxed text-suave [overflow-wrap:anywhere]">{descricao}</p>}
           </div>
           {acao}
         </header>

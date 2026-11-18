@@ -84,7 +84,7 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho
           {usados.map(({ a, x }) => {
             return (
               <li key={a} className="rounded-xl border border-borda bg-white/3 px-3 py-2 text-sm">
-                <button type="button" className="flex w-full items-center justify-between gap-2 text-left" onClick={() => setAberto(aberto === a ? null : a)} aria-expanded={aberto === a}>
+                <button type="button" className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-left" onClick={() => setAberto(aberto === a ? null : a)} aria-expanded={aberto === a}>
                   <span>{NOME_DO_APP[a] ?? a}</span>
                   <span className="num text-xs text-suave">{x.dispositivos} {x.dispositivos === 1 ? "aparelho" : "aparelhos"} · <span className={x.ativas ? "text-ok" : ""}>{x.ativas} em uso agora</span> {aberto === a ? "▴" : "▾"}</span>
                 </button>

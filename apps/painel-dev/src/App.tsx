@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
 import { useApp } from "./estado";
 import { Ajustes } from "./telas/Ajustes";
 import { AvisoDeAtualizacao, LinksDaVenus } from "./telas/Aplicativos";
@@ -12,6 +12,23 @@ import { Projetos } from "./telas/Projetos";
 import { Trafego } from "./telas/Trafego";
 import { Icone } from "./ui";
 import { LogoVivo } from "./logo";
+
+/** Se uma tela receber do servidor algo fora do esperado, mostra um aviso e deixa tentar de novo, em vez de apagar o painel inteiro. */
+class ProtegeTela extends Component<{ children: ReactNode; chave: string }, { quebrou: boolean }> {
+  state = { quebrou: false };
+  static getDerivedStateFromError() { return { quebrou: true }; }
+  componentDidUpdate(anterior: { chave: string }) { if (anterior.chave !== this.props.chave && this.state.quebrou) this.setState({ quebrou: false }); }
+  render() {
+    if (!this.state.quebrou) return this.props.children;
+    return (
+      <div className="vidro mx-auto max-w-md rounded-2xl p-5 text-center">
+        <p className="font-semibold">Esta tela não conseguiu carregar</p>
+        <p className="mt-1 text-sm text-suave">O servidor respondeu algo diferente do esperado. Tente de novo; se continuar, atualize a página.</p>
+        <button type="button" onClick={() => this.setState({ quebrou: false })} className="mt-3 rounded-xl border border-borda px-4 py-2 text-sm">Tentar de novo</button>
+      </div>
+    );
+  }
+}
 
 function Links() {
   return <div className="mx-auto max-w-3xl"><LinksDaVenus /></div>;
@@ -101,7 +118,7 @@ export function App() {
         <AvisoDeAtualizacao />
         <main className="px-4 pb-28 pt-4 md:px-6 md:pb-10 md:pt-6">
           <h1 className="mb-4 hidden text-xl font-semibold md:block">{ABAS.find((a) => a.id === aba)?.rotulo}</h1>
-          <Atual />
+          <ProtegeTela chave={aba}><Atual /></ProtegeTela>
         </main>
       </div>
       <nav aria-label="Seções" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-borda bg-fundo/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
