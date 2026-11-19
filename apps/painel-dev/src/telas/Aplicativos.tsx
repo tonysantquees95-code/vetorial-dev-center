@@ -131,6 +131,14 @@ export function LinksDaVenus() {
       { rotulo: "Voxix para Windows", detalhe: "Instalador do Voxix.", url: `${base}/voxix/windows` },
       { rotulo: "Página de download do Voxix", detalhe: "Página curta do Voxix (por enquanto, “em breve”).", url: `${base}/voxix`, abrir: true },
     ] },
+    { titulo: "V-Space", itens: [
+      { rotulo: "V-Space para Android", detalhe: "APK do launcher da suíte.", url: `${base}/vspace/android` },
+      { rotulo: "Página de download do V-Space", detalhe: "Página curta com o botão.", url: `${base}/vspace`, abrir: true },
+    ] },
+    { titulo: "Vetogoshi", itens: [
+      { rotulo: "Vetogoshi para Android", detalhe: "APK do bichinho virtual.", url: `${base}/vetogoshi/android` },
+      { rotulo: "Página de download do Vetogoshi", detalhe: "Página curta com o botão.", url: `${base}/vetogoshi`, abrir: true },
+    ] },
     { titulo: "Vyntem", itens: [
       { rotulo: "Vyntem para Android", detalhe: "APK do controle de gastos com IA.", url: `${base}/vyntem/android` },
       { rotulo: "Vyntem para Windows", detalhe: "Instalador do Vyntem.", url: `${base}/vyntem/windows` },
