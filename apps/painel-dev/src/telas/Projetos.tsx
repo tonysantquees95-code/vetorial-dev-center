@@ -107,7 +107,7 @@ const Mini = ({ rotulo, valor }: { rotulo: string; valor: string }) => (
   <div className="rounded-xl border border-borda bg-white/3 px-2 py-2"><div className="num text-lg font-semibold">{valor}</div><div className="text-[11px] text-suave">{rotulo}</div></div>
 );
 
-type Destino = { tipo: "app"; app: string } | { tipo: "site"; url: string; nota?: string } | { tipo: "breve" };
+type Destino = { tipo: "app"; app: string } | { tipo: "site"; url: string; nota?: string; rotulo?: string } | { tipo: "breve" };
 type Plataforma = "android" | "windows" | "mac" | "web" | "ios";
 const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", mac: "Mac", web: "Versão web", ios: "iOS" };
 
@@ -125,7 +125,7 @@ function plataformaAtual(): Plataforma | undefined {
 function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>> {
   switch (id) {
     case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, mac: { tipo: "app", app: "mac" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
-    case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
+    case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "site", url: `${site}/pdf/`, rotulo: "Vindex PDF (web)", nota: "Ferramentas de PDF no navegador. Dá para instalar como app." }, ios: { tipo: "site", url: `${site}/pdf/`, rotulo: "Vindex PDF (iPhone)", nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
     case "vortex": return { android: { tipo: "app", app: "vortex-android" }, windows: { tipo: "app", app: "vortex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "velox": return { android: { tipo: "app", app: "velox-android" }, windows: { tipo: "app", app: "velox-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "vyntem": return { android: { tipo: "app", app: "vyntem-android" }, windows: { tipo: "app", app: "vyntem-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
@@ -146,6 +146,17 @@ function Plataformas({ p }: { p: Projeto }) {
   const aqui = plataformaAtual();
   const ordem = (["android", "windows", "mac", "web", "ios"] as Plataforma[]).filter((k) => d[k]).sort((a, b) => Number(b === aqui) - Number(a === aqui));
   if (ordem.length === 0) return null;
+  async function compartilhar(url: string, titulo: string) {
+    setMsg("");
+    try {
+      if (typeof navigator.share === "function") { await navigator.share({ title: titulo, url }); return; }
+      await navigator.clipboard.writeText(url);
+      setMsg("Link copiado. É só colar onde quiser compartilhar.");
+    } catch (e) {
+      if ((e as { name?: string }).name === "AbortError") return;
+      setMsg(`Não consegui compartilhar agora. O link é ${url}`);
+    }
+  }
   async function baixar(app: string) {
     setOcupado(app);
     setMsg("");
@@ -170,14 +181,15 @@ function Plataformas({ p }: { p: Projeto }) {
           return (
             <div key={k} className="flex flex-col justify-between gap-2 rounded-xl border border-borda bg-white/3 px-3 py-2">
               <div className="min-w-0">
-                <div className="text-sm">{ROTULOS[k]}{k === aqui && <span className="ml-1.5 text-xs text-suave">· este aparelho</span>}</div>
+                <div className="text-sm">{x.tipo === "site" && x.rotulo ? x.rotulo : ROTULOS[k]}{k === aqui && <span className="ml-1.5 text-xs text-suave">· este aparelho</span>}</div>
                 <div className="num text-xs text-suave">{detalhe}</div>
               </div>
               <Botao variante={pronto ? "primario" : undefined} disabled={!pronto || (x.tipo === "app" && ocupado === x.app)}
-                aria-label={`${x.tipo === "site" ? "Abrir" : "Baixar"} ${p.nome} para ${ROTULOS[k]}`}
+                aria-label={`${x.tipo === "site" ? "Abrir" : "Baixar"} ${x.tipo === "site" && x.rotulo ? x.rotulo : `${p.nome} para ${ROTULOS[k]}`}`}
                 onClick={() => { if (x.tipo === "site") window.open(x.url, "_blank", "noopener,noreferrer"); else if (x.tipo === "app") void baixar(x.app); }}>
                 {x.tipo === "site" ? "Abrir" : <><Icone nome="baixar" tam={16} />{x.tipo === "breve" ? "Em breve" : "Baixar"}</>}
               </Botao>
+              {x.tipo === "site" && <Botao aria-label={`Compartilhar o link de ${x.rotulo ?? `${p.nome} para ${ROTULOS[k]}`}`} onClick={() => void compartilhar(x.url, x.rotulo ?? p.nome)}><Icone nome="link" tam={16} />Compartilhar link</Botao>}
             </div>
           );
         })}
