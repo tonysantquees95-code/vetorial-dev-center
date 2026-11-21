@@ -7,7 +7,7 @@ import { Aviso, BotaoConfirmar, Cartao, Carregando, Indicador, Selo, Vazio } fro
 
 const NOME_DO_APP: Record<string, string> = { venus: "Vênus", vindex: "Vindex", vortex: "Vortex", vyntem: "Vyntem", velox: "Velox", drive: "Vetorial Drive", voxix: "Voxix" };
 const SITUACAO: Record<UsuarioDoPainel["situacao"], { rotulo: string; tom: "ok" | "aviso" | "neutro" }> = {
-  admin: { rotulo: "Administrador · ilimitado", tom: "ok" }, pagante: { rotulo: "Pagante", tom: "ok" }, teste: { rotulo: "Em teste grátis", tom: "aviso" }, gratis: { rotulo: "Só produtos grátis", tom: "neutro" },
+  admin: { rotulo: "Administrador · ilimitado", tom: "ok" }, testador: { rotulo: "Testador · grátis sem prazo", tom: "ok" }, pagante: { rotulo: "Pagante", tom: "ok" }, teste: { rotulo: "Em teste grátis", tom: "aviso" }, gratis: { rotulo: "Só produtos grátis", tom: "neutro" },
 };
 type Filtro = "todos" | "pagantes" | "teste" | "gratis" | "agora";
 

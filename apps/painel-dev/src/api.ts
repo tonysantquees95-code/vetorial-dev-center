@@ -42,9 +42,18 @@ export interface AparelhoDoApp { id: string; nome: string; plataforma: string; c
 export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number; aparelhos: AparelhoDoApp[] }
 export interface UsuarioDoPainel {
   id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
-  situacao: "admin" | "pagante" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
+  situacao: "admin" | "testador" | "pagante" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
   apps: Record<string, UsuarioApp>;
   sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
+}
+export interface Relato {
+  id: number; criado: number; app: string; versao: string; plataforma: string; tipo: "problema" | "ideia" | "elogio" | "pesquisa"; texto: string; nota: number | null;
+  respostas: { como_conheceu?: string; ajuda?: string; indicaria?: string; chamou?: string[]; falta?: string; por_que?: string }; contato: string; aparelho: string; status: "novo" | "visto" | "resolvido"; resposta_dev: string;
+}
+export interface Contagem { id: string; nome: string; n: number }
+export interface Feedback {
+  relatos: Relato[]; apps: Record<string, string>; rotulos: Record<string, Record<string, string>>;
+  resumo: { total: number; novos: number; problemas: number; ideias: number; elogios: number; pesquisas: number; notaMedia: number | null; comoConheceu: Contagem[]; ajuda: Contagem[]; chamou: Contagem[]; indicaria: Contagem[] };
 }
 export interface Usuarios {
   agora: number; apps: string[]; maxDispositivos: number; maxAtivas: number;
@@ -160,6 +169,8 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
+    feedback: (filtros = "") => chamar<Feedback>("GET", `/dev/feedback${filtros}`),
+    marcarFeedback: (id: number, status: string, resposta_dev = "") => chamar<{ ok: boolean }>("POST", `/dev/feedback/${id}`, { status, resposta_dev }),
     bloquearUsuario: (id: string, bloquear: boolean) => chamar<{ ok: boolean }>("POST", `/dev/usuarios/${id}/${bloquear ? "bloquear" : "desbloquear"}`, {}),
     removerAparelho: (usuario: string, aparelho: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${usuario}/aparelhos/${aparelho}`),
     excluirUsuario: (id: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${id}`),

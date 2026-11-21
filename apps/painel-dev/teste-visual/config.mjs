@@ -15,6 +15,15 @@ const respostas = {
   "/dev/usuarios": { agora, apps: ["venus", "vindex", "vortex", "vyntem", "voxix"], maxDispositivos: 3, maxAtivas: 2, total: 3, pagantes: 1, bloqueados: 0, emTeste: 0, soGratis: 2, usandoAgora: 1, semRecuperacao: 0, usuarios: [usuario(1, { situacao: "admin", admin: true }), usuario(2, { situacao: "pagante", pagante: true }), usuario(3)] },
   "/dev/dispositivos": { agora, maxDispositivos: 3, maxAtivas: 2, ttlMs: 600000, sessoesAtivas: 1, contas: [] },
   "/dev/config": { escutaContinua: false, provedores: { gemini: { ligado: true, chaveConfigurada: true } }, repos: { vindex: "tonysantquees95-code/vindex", vortex: "tonysantquees95-code/vortex" } },
+  "/dev/feedback": {
+    apps: { venus: "Vênus", vindex: "Vindex" }, rotulos: { ajuda: { muito: "Ajuda muito" }, indicaria: { sim: "Sim" }, chamou: { agenda: "Agenda de serviços", assistente: "Assistente com IA e voz" }, como_conheceu: { instagram: "Instagram" } },
+    resumo: { total: 3, novos: 2, problemas: 1, ideias: 1, elogios: 0, pesquisas: 1, notaMedia: 4.5, comoConheceu: [{ id: "instagram", nome: "Instagram", n: 1 }], ajuda: [{ id: "muito", nome: "Ajuda muito", n: 1 }], chamou: [{ id: "agenda", nome: "Agenda de serviços", n: 1 }], indicaria: [{ id: "sim", nome: "Sim", n: 1 }] },
+    relatos: [
+      { id: 3, criado: agora, app: "venus", versao: "1.210", plataforma: "android", tipo: "problema", texto: "O botão de enviar não responde quando eu toco, mesmo depois de reiniciar o aplicativo várias vezes seguidas.", nota: null, respostas: {}, contato: "51999990000", aparelho: "Mozilla/5.0 (Linux; Android 14; SM-A546E) AppleWebKit/537.36", status: "novo", resposta_dev: "" },
+      { id: 2, criado: agora, app: "vindex", versao: "", plataforma: "windows", tipo: "ideia", texto: "Seria bom poder girar várias páginas de uma vez.", nota: null, respostas: {}, contato: "", aparelho: "", status: "visto", resposta_dev: "" },
+      { id: 1, criado: agora, app: "venus", versao: "1.210", plataforma: "android", tipo: "pesquisa", texto: "", nota: 5, respostas: { ajuda: "muito", chamou: ["agenda", "assistente"], como_conheceu: "instagram", indicaria: "sim", falta: "Mais modelos de logo" }, contato: "", aparelho: "", status: "novo", resposta_dev: "" },
+    ],
+  },
   "/dev/cache": { exato: true, semantico: true, acertos24h: 5, chamadas24h: 50, taxa: 0.1 },
   "/dev/telemetria": { agora, itens: [] },
   "/dev/cofre/estado": { configurado: true, bloqueadoAte: 0, sugeridas: [] },
