@@ -108,8 +108,8 @@ const Mini = ({ rotulo, valor }: { rotulo: string; valor: string }) => (
 );
 
 type Destino = { tipo: "app"; app: string } | { tipo: "site"; url: string; nota?: string; rotulo?: string } | { tipo: "breve" };
-type Plataforma = "android" | "windows" | "mac" | "web" | "ios";
-const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", mac: "Mac", web: "Versão web", ios: "iOS" };
+type Plataforma = "android" | "windows" | "mac" | "web" | "ios" | "vitrine";
+const ROTULOS: Record<Plataforma, string> = { android: "Android", windows: "Windows", mac: "Mac", web: "Versão web", ios: "iOS", vitrine: "Vênus Vitrine" };
 
 /** Plataforma do aparelho que está usando o painel: o botão dela vem primeiro (num PC, baixar o APK não serve para nada). */
 function plataformaAtual(): Plataforma | undefined {
@@ -124,7 +124,7 @@ function plataformaAtual(): Plataforma | undefined {
 /** Onde cada projeto é usado. O que ainda não existe fica como atalho "em breve" e vira botão de verdade quando sair. */
 function destinos(id: string, site: string): Partial<Record<Plataforma, Destino>> {
   switch (id) {
-    case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, mac: { tipo: "app", app: "mac" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
+    case "venus": return { android: { tipo: "app", app: "venus" }, windows: { tipo: "app", app: "windows" }, mac: { tipo: "app", app: "mac" }, web: { tipo: "site", url: `${site}/app/` }, ios: { tipo: "site", url: `${site}/app/`, nota: "No Safari: Compartilhar › Adicionar à Tela de Início" }, vitrine: { tipo: "site", url: `${site}/vitrine/`, rotulo: "Vênus Vitrine (web)", nota: "Ferramentas grátis: link curto, QR code, panfleto e logo. Porta de entrada da Vênus." } };
     case "vindex": return { android: { tipo: "app", app: "vindex-android" }, windows: { tipo: "app", app: "vindex-windows" }, web: { tipo: "site", url: `${site}/pdf/`, rotulo: "Vindex PDF (web)", nota: "Ferramentas de PDF no navegador. Dá para instalar como app." }, ios: { tipo: "site", url: `${site}/pdf/`, rotulo: "Vindex PDF (iPhone)", nota: "No Safari: Compartilhar › Adicionar à Tela de Início" } };
     case "vortex": return { android: { tipo: "app", app: "vortex-android" }, windows: { tipo: "app", app: "vortex-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
     case "velox": return { android: { tipo: "app", app: "velox-android" }, windows: { tipo: "app", app: "velox-windows" }, web: { tipo: "breve" }, ios: { tipo: "breve" } };
@@ -144,7 +144,7 @@ function Plataformas({ p }: { p: Projeto }) {
   const [ocupado, setOcupado] = useState("");
   const d = destinos(p.id, endereco.replace(/\/+$/, ""));
   const aqui = plataformaAtual();
-  const ordem = (["android", "windows", "mac", "web", "ios"] as Plataforma[]).filter((k) => d[k]).sort((a, b) => Number(b === aqui) - Number(a === aqui));
+  const ordem = (["android", "windows", "mac", "web", "ios", "vitrine"] as Plataforma[]).filter((k) => d[k]).sort((a, b) => Number(b === aqui) - Number(a === aqui));
   if (ordem.length === 0) return null;
   async function compartilhar(url: string, titulo: string) {
     setMsg("");
