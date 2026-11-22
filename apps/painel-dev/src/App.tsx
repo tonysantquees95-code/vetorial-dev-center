@@ -7,6 +7,7 @@ import { Bi } from "./telas/Bi";
 import { Cofre } from "./telas/Cofre";
 import { Usuarios } from "./telas/Usuarios";
 import { Feedback } from "./telas/Feedback";
+import { FaixaDeAvisos } from "./telas/Avisos";
 import { Ferramentas } from "./telas/Ferramentas";
 import { Login } from "./telas/Login";
 import { Projetos } from "./telas/Projetos";
@@ -118,6 +119,7 @@ export function App() {
         </header>
         <div className="fixed right-4 top-3 z-30 hidden md:block"><BotaoAtualizar /></div>
         <AvisoDeAtualizacao />
+        <FaixaDeAvisos />
         <main className="px-4 pb-28 pt-4 md:px-6 md:pb-10 md:pt-6">
           <h1 className="mb-4 hidden text-xl font-semibold md:block">{ABAS.find((a) => a.id === aba)?.rotulo}</h1>
           <ProtegeTela chave={aba}><Atual /></ProtegeTela>

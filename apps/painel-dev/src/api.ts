@@ -169,6 +169,8 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     trafego: (desde = 0) => chamar<Trafego>("GET", `/dev/trafego?desde=${desde}&limite=80`),
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
+    alertas: () => chamar<AlertasDev>("GET", "/dev/alertas"),
+    marcarAlertas: (corpo: { id?: number; status?: string; todos?: boolean }) => chamar<{ ok: boolean }>("POST", corpo.id ? `/dev/alertas/${corpo.id}` : "/dev/alertas", corpo),
     feedback: (filtros = "") => chamar<Feedback>("GET", `/dev/feedback${filtros}`),
     marcarFeedback: (id: number, status: string, resposta_dev = "") => chamar<{ ok: boolean }>("POST", `/dev/feedback/${id}`, { status, resposta_dev }),
     bloquearUsuario: (id: string, bloquear: boolean) => chamar<{ ok: boolean }>("POST", `/dev/usuarios/${id}/${bloquear ? "bloquear" : "desbloquear"}`, {}),
@@ -195,3 +197,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
   };
 }
 export type Cliente = ReturnType<typeof criarCliente>;
+
+/** Avisos do Painel: build quebrado, erro relatado e erro em alta. */
+export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
+export type AlertasDev = { alertas: AlertaDev[]; novos: number };

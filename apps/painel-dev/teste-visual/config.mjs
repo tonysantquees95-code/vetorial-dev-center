@@ -24,6 +24,10 @@ const respostas = {
       { id: 1, criado: agora, app: "venus", versao: "1.210", plataforma: "android", tipo: "pesquisa", texto: "", nota: 5, respostas: { ajuda: "muito", chamou: ["agenda", "assistente"], como_conheceu: "instagram", indicaria: "sim", falta: "Mais modelos de logo" }, contato: "", aparelho: "", status: "novo", resposta_dev: "" },
     ],
   },
+  "/dev/alertas": { novos: 2, alertas: [
+    { id: 2, criado: agora, tipo: "build", app: "vortex", titulo: "Build falhou: Vortex", detalhe: "App (interface e Windows) #98 · commit 84e0088", status: "novo" },
+    { id: 1, criado: agora, tipo: "alta", app: "venus", titulo: "Erro em alta no Vênus", detalhe: "3 relatos de problema na última hora", status: "novo" },
+  ] },
   "/dev/cache": { exato: true, semantico: true, acertos24h: 5, chamadas24h: 50, taxa: 0.1 },
   "/dev/telemetria": { agora, itens: [] },
   "/dev/cofre/estado": { configurado: true, bloqueadoAte: 0, sugeridas: [] },
@@ -37,6 +41,7 @@ export default {
   },
   respostas,
   cenarios: [
+    ["avisos", "normal", async (p) => { await p.getByRole("button", { name: /aviso/ }).first().click(); await p.getByText("Build falhou: Vortex").waitFor(); }],
     ["entrar", "entrar", async (p) => { await p.waitForTimeout(300); }],
     ...ABAS.map((a) => [`aba-${a}`, "normal", async (p) => { await p.evaluate((h) => { location.hash = `#/${h}`; }, a); await p.waitForTimeout(700); }]),
     ["menu-do-celular", "normal", async (p) => { const b = p.getByLabel("Abrir o menu"); if (!(await b.isVisible())) throw new Error("PULAR: sem menu nesta largura"); await b.click(); await p.waitForTimeout(400); }],
