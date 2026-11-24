@@ -5,9 +5,9 @@ import { useBusca } from "../hooks";
 import { haQuanto } from "../logica";
 import { Aviso, Botao, Cartao, Carregando, Indicador, Selo, Vazio } from "../ui";
 
-type Filtro = "novos" | "problema" | "ideia" | "elogio" | "pesquisa" | "todos";
+type Filtro = "novos" | "problema" | "ideia" | "elogio" | "pesquisa" | "assinatura" | "todos";
 const TIPO: Record<Relato["tipo"], { rotulo: string; tom: "erro" | "ok" | "aviso" | "neutro" }> = {
-  problema: { rotulo: "Erro", tom: "erro" }, ideia: { rotulo: "Ideia", tom: "aviso" }, elogio: { rotulo: "Elogio", tom: "ok" }, pesquisa: { rotulo: "Pesquisa", tom: "neutro" },
+  problema: { rotulo: "Erro", tom: "erro" }, ideia: { rotulo: "Ideia", tom: "aviso" }, elogio: { rotulo: "Elogio", tom: "ok" }, pesquisa: { rotulo: "Pesquisa", tom: "neutro" }, assinatura: { rotulo: "Vai assinar?", tom: "aviso" },
 };
 
 function Barras({ titulo, itens, total }: { titulo: string; itens: Contagem[]; total: number }) {
@@ -41,7 +41,7 @@ export function Feedback() {
     setMsg("");
     try { await api.marcarFeedback(id, status); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
   }
-  const filtros: [Filtro, string][] = [["novos", `Novos (${r.novos})`], ["problema", "Erros"], ["ideia", `Ideias (${r.ideias})`], ["elogio", `Elogios (${r.elogios})`], ["pesquisa", `Pesquisas (${r.pesquisas})`], ["todos", `Todos (${r.total})`]];
+  const filtros: [Filtro, string][] = [["novos", `Novos (${r.novos})`], ["problema", "Erros"], ["ideia", `Ideias (${r.ideias})`], ["elogio", `Elogios (${r.elogios})`], ["assinatura", `Vai assinar? (${r.assinaturas})`], ["pesquisa", `Pesquisas (${r.pesquisas})`], ["todos", `Todos (${r.total})`]];
   return (
     <div className="space-y-4">
       {erro && <Aviso>{erro}</Aviso>}
@@ -52,6 +52,14 @@ export function Feedback() {
         <Indicador rotulo="Nota média (1 a 5)" valor={r.notaMedia === null ? "—" : String(r.notaMedia)} detalhe={`${r.pesquisas} pesquisa(s)`} />
         <Indicador rotulo="Ideias" valor={String(r.ideias)} />
       </div>
+      {r.assinaturas > 0 && (
+        <Cartao titulo="Vão assinar?" descricao="Resposta de quem está testando ou já usa os apps pagos">
+          <div className="grid gap-5 md:grid-cols-2">
+            <Barras titulo="Decisão" itens={r.decisoes} total={r.assinaturas} />
+            <Barras titulo="Por que não ou ainda não" itens={r.motivosNao} total={r.assinaturas} />
+          </div>
+        </Cartao>
+      )}
       {r.pesquisas > 0 && (
         <Cartao titulo="O que a pesquisa mostra" descricao="Respostas da pesquisa rápida dentro dos apps">
           <div className="grid gap-5 md:grid-cols-2">
@@ -81,6 +89,13 @@ export function Feedback() {
               <span className="ml-auto text-xs text-suave">{haQuanto(x.criado)}</span>
             </div>
             {x.texto && <p className="mt-3 whitespace-pre-wrap break-words text-sm">{x.texto}</p>}
+            {x.tipo === "assinatura" && (
+              <ul className="mt-3 space-y-1 text-sm text-suave">
+                <li>Decisão: <b className="text-texto">{dado.rotulos.decisao?.[x.respostas.decisao ?? ""] ?? x.respostas.decisao}</b></li>
+                {x.respostas.motivo && <li>Motivo: <b className="text-texto">{dado.rotulos.motivo?.[x.respostas.motivo] ?? x.respostas.motivo}</b></li>}
+                {x.respostas.dias_de_uso != null && <li>Dias de uso: <b className="text-texto">{x.respostas.dias_de_uso}</b>{x.respostas.plano ? ` · plano ${x.respostas.plano}` : ""}</li>}
+              </ul>
+            )}
             {x.tipo === "pesquisa" && (
               <ul className="mt-3 space-y-1 text-sm text-suave">
                 {x.nota !== null && <li>Nota: <b className="text-texto">{x.nota}/5</b></li>}

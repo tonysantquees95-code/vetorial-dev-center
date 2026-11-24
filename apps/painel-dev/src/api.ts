@@ -47,13 +47,13 @@ export interface UsuarioDoPainel {
   sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
 }
 export interface Relato {
-  id: number; criado: number; app: string; versao: string; plataforma: string; tipo: "problema" | "ideia" | "elogio" | "pesquisa"; texto: string; nota: number | null;
-  respostas: { como_conheceu?: string; ajuda?: string; indicaria?: string; chamou?: string[]; falta?: string; por_que?: string }; contato: string; aparelho: string; status: "novo" | "visto" | "resolvido"; resposta_dev: string;
+  id: number; criado: number; app: string; versao: string; plataforma: string; tipo: "problema" | "ideia" | "elogio" | "pesquisa" | "assinatura"; texto: string; nota: number | null;
+  respostas: { decisao?: string; motivo?: string; plano?: string; dias_de_uso?: number | null; como_conheceu?: string; ajuda?: string; indicaria?: string; chamou?: string[]; falta?: string; por_que?: string }; contato: string; aparelho: string; status: "novo" | "visto" | "resolvido"; resposta_dev: string;
 }
 export interface Contagem { id: string; nome: string; n: number }
 export interface Feedback {
   relatos: Relato[]; apps: Record<string, string>; rotulos: Record<string, Record<string, string>>;
-  resumo: { total: number; novos: number; problemas: number; ideias: number; elogios: number; pesquisas: number; notaMedia: number | null; comoConheceu: Contagem[]; ajuda: Contagem[]; chamou: Contagem[]; indicaria: Contagem[] };
+  resumo: { total: number; novos: number; problemas: number; ideias: number; elogios: number; pesquisas: number; notaMedia: number | null; comoConheceu: Contagem[]; ajuda: Contagem[]; chamou: Contagem[]; indicaria: Contagem[]; assinaturas: number; decisoes: Contagem[]; motivosNao: Contagem[] };
 }
 export interface Usuarios {
   agora: number; apps: string[]; maxDispositivos: number; maxAtivas: number;
