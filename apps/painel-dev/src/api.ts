@@ -170,6 +170,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
     alertas: () => chamar<AlertasDev>("GET", "/dev/alertas"),
+    visitas: (dias = 14) => chamar<VisitasDoSite>("GET", `/dev/visitas?dias=${dias}`),
     marcarAlertas: (corpo: { id?: number; status?: string; todos?: boolean }) => chamar<{ ok: boolean }>("POST", corpo.id ? `/dev/alertas/${corpo.id}` : "/dev/alertas", corpo),
     feedback: (filtros = "") => chamar<Feedback>("GET", `/dev/feedback${filtros}`),
     marcarFeedback: (id: number, status: string, resposta_dev = "") => chamar<{ ok: boolean }>("POST", `/dev/feedback/${id}`, { status, resposta_dev }),
@@ -199,5 +200,13 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
 export type Cliente = ReturnType<typeof criarCliente>;
 
 /** Avisos do Painel: build quebrado, erro relatado e erro em alta. */
-export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
+export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
 export type AlertasDev = { alertas: AlertaDev[]; novos: number };
+
+/** Quantas pessoas entraram no site (visitantes diferentes por dia) e quantos baixaram cada app. */
+export type VisitasDoSite = {
+  dias: number; hoje: number; ontem: number; ultimos7: number; periodo: number;
+  serie: { dia: string; pessoas: number }[];
+  paginas: { pagina: string; visitas: number }[];
+  downloads: { app: string; nome: string; total: number; hoje: number }[];
+};
