@@ -12,7 +12,7 @@
     "apk:release": "npm run build:apk && cd android && ./gradlew assembleRelease",
     "typecheck": "tsc -p tsconfig.json",
     "preview": "vite preview",
-    "test": "node --test teste/logica.test.mjs",
+    "test": "node --test teste/*.test.mjs",
     "test:visual": "node teste-visual/telas.mjs"
   },
   "dependencies": {

@@ -12,3 +12,8 @@ Site (PWA): https://tonysantquees95-code.github.io/vetorial-dev-center/ · APK D
 
 ## Teste visual das telas
 `npm run build && npm run test:visual -w @venus/painel-dev` abre o painel em 7 tamanhos de tela e confere cortes e rolagem (config em `apps/painel-dev/teste-visual/config.mjs`).
+
+## Teste de segurança (igual em todos os apps da suíte)
+- `apps/painel-dev/teste/seguranca.test.mjs` roda junto com os outros testes e na publicação: se falhar, a publicação para. Confere o repositório inteiro: segredo escrito no código (chaves, tokens, senhas), arquivo que nunca pode ser versionado (.env, chaves de assinatura), CSP do Tauri sem `unsafe-eval`/curinga, manifesto do Android (debug, tráfego http, componente exposto sem permissão, `QUERY_ALL_PACKAGES`), `eval`, HTML montado com texto (`innerHTML`), endereço `http://` fora da máquina local, segredo no log, HTTPS desligado e WebView com acesso perigoso.
+- Exceção justificada = uma linha em `seguranca.permitidos.json` (regra, arquivo, trecho e MOTIVO de verdade); sem motivo, não vale. Texto digitado pela pessoa ou vindo de site/servidor nunca entra em HTML sem escapar (`textContent` ou `esc()`).
+- O arquivo é o mesmo em todos os apps: mudou uma regra? Mude em todos. Achou uma brecha nova? Escreva primeiro um teste que a reproduz.
