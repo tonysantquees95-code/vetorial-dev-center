@@ -3,6 +3,7 @@ import { ErroApi, type ApkInfo, type Cliente, type Fase, type Projeto } from "..
 import { useApp } from "../estado";
 import { useBusca } from "../hooks";
 import { bytes, compacto, haQuanto, rotuloDaFase, rotuloDoBuild, tomDaFase, tomDoBuild } from "../logica";
+import { ManualDoApp } from "./Manual";
 import { Aviso, Barra, Botao, BotaoConfirmar, Cartao, Carregando, Icone, Indicador, Ponto, Selo, Vazio } from "../ui";
 
 export function Projetos() {
@@ -32,6 +33,7 @@ export function Projetos() {
 
 function CartaoDoProjeto({ p, aoMudar }: { p: Projeto; aoMudar: () => void }) {
   const { api } = useApp();
+  const [manualAberto, setManualAberto] = useState(false);
   return (
     <Cartao
       titulo={p.nome}
@@ -93,6 +95,16 @@ function CartaoDoProjeto({ p, aoMudar }: { p: Projeto; aoMudar: () => void }) {
               </a>
             );
           })}
+        </div>
+      )}
+
+      {p.conectado && (
+        <div className="mb-4">
+          <button type="button" aria-expanded={manualAberto} onClick={() => setManualAberto((v) => !v)} className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-xl border px-3 text-sm font-medium ${manualAberto ? "border-ciano bg-ciano/10 text-ciano" : "border-borda bg-white/3"}`}>
+            <span className="flex items-center gap-2"><Icone nome="livro" tam={16} />Manual e movimentações</span>
+            <span aria-hidden>{manualAberto ? "▲" : "▼"}</span>
+          </button>
+          {manualAberto && <div className="mt-2"><ManualDoApp id={p.id} /></div>}
         </div>
       )}
 

@@ -18,6 +18,7 @@ const CAMINHOS: Record<string, string> = {
   pessoas: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8",
   conversa: "M4 5h16v11H9l-4 4v-4H4V5z",
   cartao: "M3 6h18v12H3zM3 10h18M7 15h3",
+  livro: "M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3zM5 17a3 3 0 013-3h11",
   lixeira: "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"
 };
 export function Icone({ nome, tam = 20 }: { nome: string; tam?: number }) {

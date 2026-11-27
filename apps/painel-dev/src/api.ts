@@ -21,6 +21,8 @@ export interface Projeto {
   id: string; nome: string; descricao: string; repo: string | null; urlRepo: string | null; conectado: boolean; aviso?: string;
   fases: Fase[]; progresso: number; fasesConcluidas: number; metricas: Metricas | null; builds: Build[]; estadoBuild: string; apks: ApkInfo[]; compilando?: { workflow: string; percentual: number; etapa: string } | null;
 }
+export interface Movimentacao { sha: string; mensagem: string; quando: number; autor: string; url: string | null }
+export interface ManualDoProjeto { projeto: string; nome: string; repo: string; url: string; texto: string | null; atualizado: number; movimentacoes: Movimentacao[]; falha: string | null }
 export interface Painel { gerado: number; admin: string; projetos: Projeto[] }
 export interface Bi {
   gerado: number; dias: string[]; faturamentoCentavos: number[]; novosLojistas: number[]; novasContas: number[];
@@ -170,6 +172,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
     alertas: () => chamar<AlertasDev>("GET", "/dev/alertas"),
+    manual: (projeto: string) => chamar<ManualDoProjeto>("GET", `/dev/manual?projeto=${encodeURIComponent(projeto)}`),
     assinaturas: () => chamar<ResumoDeAssinaturas>("GET", "/dev/assinaturas"),
     visitas: (dias = 14) => chamar<VisitasDoSite>("GET", `/dev/visitas?dias=${dias}`),
     marcarAlertas: (corpo: { id?: number; status?: string; todos?: boolean }) => chamar<{ ok: boolean }>("POST", corpo.id ? `/dev/alertas/${corpo.id}` : "/dev/alertas", corpo),
