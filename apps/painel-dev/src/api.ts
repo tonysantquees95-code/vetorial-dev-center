@@ -201,7 +201,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
 export type Cliente = ReturnType<typeof criarCliente>;
 
 /** Avisos do Painel: build quebrado, erro relatado e erro em alta. */
-export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download" | "pagamento"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
+export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download" | "pagamento" | "cobranca"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
 export type AlertasDev = { alertas: AlertaDev[]; novos: number };
 
 /** Assinantes, teste grátis e receita do mês (contas do dono e dos testadores ficam de fora). */
