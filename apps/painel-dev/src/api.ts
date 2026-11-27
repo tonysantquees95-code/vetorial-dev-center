@@ -170,6 +170,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     dispositivos: () => chamar<Dispositivos>("GET", "/dev/dispositivos"),
     usuarios: () => chamar<Usuarios>("GET", "/dev/usuarios"),
     alertas: () => chamar<AlertasDev>("GET", "/dev/alertas"),
+    assinaturas: () => chamar<ResumoDeAssinaturas>("GET", "/dev/assinaturas"),
     visitas: (dias = 14) => chamar<VisitasDoSite>("GET", `/dev/visitas?dias=${dias}`),
     marcarAlertas: (corpo: { id?: number; status?: string; todos?: boolean }) => chamar<{ ok: boolean }>("POST", corpo.id ? `/dev/alertas/${corpo.id}` : "/dev/alertas", corpo),
     feedback: (filtros = "") => chamar<Feedback>("GET", `/dev/feedback${filtros}`),
@@ -200,8 +201,16 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
 export type Cliente = ReturnType<typeof criarCliente>;
 
 /** Avisos do Painel: build quebrado, erro relatado e erro em alta. */
-export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
+export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download" | "pagamento"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
 export type AlertasDev = { alertas: AlertaDev[]; novos: number };
+
+/** Assinantes, teste grátis e receita do mês (contas do dono e dos testadores ficam de fora). */
+export type ResumoDeAssinaturas = {
+  assinantes: number; emTeste: number; vencendoEm7: number; venceram: number; semTeste: number; testadores: number;
+  pacotes: { chave: string; nome: string; n: number }[];
+  mes: { pagamentos: number; centavos: number };
+  recentes: { id: string; email: string; valor: number; pacote: string; gateway: string; quando: number; aguardandoLiberacao: boolean }[];
+};
 
 /** Quantas pessoas entraram no site (visitantes diferentes por dia) e quantos baixaram cada app. */
 export type VisitasDoSite = {

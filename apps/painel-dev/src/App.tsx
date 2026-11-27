@@ -13,6 +13,7 @@ import { Login } from "./telas/Login";
 import { Projetos } from "./telas/Projetos";
 import { Trafego } from "./telas/Trafego";
 import { Visitas } from "./telas/Visitas";
+import { Assinaturas } from "./telas/Assinaturas";
 import { Icone } from "./ui";
 import { LogoVivo } from "./logo";
 
@@ -67,6 +68,7 @@ const ABAS = [
   { id: "ferramentas", rotulo: "Funções", detalhe: "IA e automações", icone: "chip", tela: Ferramentas },
   { id: "trafego", rotulo: "Tráfego", detalhe: "Uso e atividade", icone: "pulso", tela: Trafego },
   { id: "visitas", rotulo: "Visitas", detalhe: "Quem entrou no site e baixou", icone: "grafico", tela: Visitas },
+  { id: "assinaturas", rotulo: "Assinaturas", detalhe: "Quem paga e quanto entrou", icone: "cartao", tela: Assinaturas },
   { id: "usuarios", rotulo: "Usuários", detalhe: "Quem usa cada aplicativo", icone: "pessoas", tela: Usuarios },
   { id: "feedback", rotulo: "Feedback", detalhe: "Erros, ideias e pesquisa", icone: "conversa", tela: Feedback },
   { id: "cofre", rotulo: "Cofre", detalhe: "Chaves e senhas das APIs", icone: "cadeado", tela: Cofre },
