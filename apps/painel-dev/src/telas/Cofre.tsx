@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ErroApi, type ChaveCofre, type ListaCofre } from "../api";
 import { useApp } from "../estado";
 import { useBusca } from "../hooks";
@@ -72,6 +72,7 @@ export function Cofre() {
       </div>
       <Importar aoGerar={async () => (await rodar(() => api.cofreCodigo(senha)))?.codigo ?? ""} ocupado={ocupado} />
       <NovaChave ocupado={ocupado} aoGuardar={async (n, v) => { if (await rodar(() => api.cofreGuardar(senha, n, v), `${n} guardada.`)) await abrir(); }} />
+      <BackupDasChaves senha={senha} ocupado={ocupado} rodar={rodar} />
       <TrocarSenha ocupado={ocupado} aoTrocar={async (nova) => { if (await rodar(() => api.cofreTrocarSenha(senha, nova), "Senha do cofre trocada.")) { setSenha(nova); } }} />
       <Cartao titulo="Últimos acessos" descricao="Sem valores de chave, só o que foi feito.">
         <ul className="space-y-1 text-xs text-suave">{lista.historico.map((h, i) => <li key={i}>{haQuanto(h.quando)} · {h.acao}{h.nome ? ` · ${h.nome}` : ""}{h.ok ? "" : " · falhou"}</li>)}</ul>
@@ -136,6 +137,39 @@ function Importar({ aoGerar, ocupado }: { aoGerar: () => Promise<string>; ocupad
         <div className="space-y-2"><code className="block break-all rounded-xl border border-borda bg-white/5 p-3 text-sm select-all">{codigo}</code>
           <Botao onClick={() => { void navigator.clipboard?.writeText(codigo); }}>Copiar</Botao></div>
       ) : <Botao variante="primario" disabled={ocupado} onClick={async () => setCodigo(await aoGerar())}>Gerar código</Botao>}
+    </Cartao>
+  );
+}
+
+/** Cópia das chaves que assinam os APKs: sai criptografada com uma frase só do dono, para guardar fora da Cloudflare (Drive). */
+function BackupDasChaves({ senha, ocupado, rodar }: { senha: string; ocupado: boolean; rodar: <T>(f: () => Promise<T>, ok?: string) => Promise<T | undefined> }) {
+  const { api } = useApp();
+  const [info, setInfo] = useState<{ repositorios: string[]; ultimoBackup: number } | null>(null);
+  const [frase, setFrase] = useState("");
+  const [texto, setTexto] = useState("");
+  useEffect(() => { void api.cofreBackupEstado(senha).then(setInfo).catch(() => setInfo(null)); }, [api, senha]);
+  const gerar = async () => {
+    const r = await rodar(() => api.cofreBackup(senha, frase), "Backup gerado. Copie e guarde no Drive.");
+    if (r) { setTexto(JSON.stringify(r)); setFrase(""); setInfo(await api.cofreBackupEstado(senha)); }
+  };
+  const restaurar = async () => {
+    let arq: unknown;
+    try { arq = JSON.parse(texto); } catch { return void rodar(async () => { throw new Error("Cole o texto do backup inteiro."); }); }
+    const r = await rodar(() => api.cofreRestaurar(senha, frase, arq));
+    if (r) { setFrase(""); setTexto(""); }
+  };
+  return (
+    <Cartao titulo="Backup das chaves dos APKs" descricao="Sem essa chave, nenhum app instalado aceita atualização. O backup sai criptografado com uma frase só sua: guarde o texto no Drive e a frase em outro lugar.">
+      <p className="mb-2 text-xs text-suave">
+        {info ? `${info.repositorios.length} chave(s) guardada(s). Último backup: ${info.ultimoBackup ? haQuanto(info.ultimoBackup) : "nunca feito"}.` : "Lendo…"}
+      </p>
+      <input className={campo} type="password" autoComplete="off" placeholder="Frase do backup (12+ com letras e números)" value={frase} onChange={(e) => setFrase(e.target.value)} />
+      <textarea className={`${campo} mt-2 h-28 font-mono text-xs`} placeholder="O backup aparece aqui. Para restaurar, cole o texto aqui." value={texto} onChange={(e) => setTexto(e.target.value)} />
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Botao variante="primario" disabled={ocupado || !forte(frase)} onClick={gerar}>Gerar backup</Botao>
+        <Botao disabled={!texto} onClick={() => { void navigator.clipboard?.writeText(texto); }}>Copiar</Botao>
+        <BotaoConfirmar rotulo="Restaurar deste texto" aoConfirmar={restaurar} desabilitado={ocupado || !texto || !frase} />
+      </div>
     </Cartao>
   );
 }

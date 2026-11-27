@@ -34,6 +34,8 @@ const respostas = {
   "/dev/cache": { exato: true, semantico: true, acertos24h: 5, chamadas24h: 50, taxa: 0.1 },
   "/dev/telemetria": { agora, itens: [] },
   "/dev/cofre/estado": { configurado: true, bloqueadoAte: 0, sugeridas: [] },
+  "/dev/cofre/listar": { chaves: [], historico: [] },
+  "/dev/cofre/backup-estado": { repositorios: ["tonysantquees95-code/Vindex-", "tonysantquees95-code/vortex"], ultimoBackup: 0 },
 };
 
 export default {
@@ -46,6 +48,7 @@ export default {
   cenarios: [
     ["avisos", "normal", async (p) => { await p.getByRole("button", { name: /aviso/ }).first().click(); await p.getByText("Build falhou: Vortex").waitFor(); }],
     ["manual-do-app", "normal", async (p) => { await p.getByRole("button", { name: /Manual e movimentações/ }).first().click(); await p.getByText("Últimas movimentações").first().waitFor(); }],
+    ["cofre-backup", "normal", async (p) => { await p.evaluate(() => { location.hash = "#/cofre"; }); await p.getByPlaceholder("Senha do cofre").fill("senha-do-cofre-123"); await p.getByRole("button", { name: "Abrir", exact: true }).click(); await p.getByText("Backup das chaves dos APKs").waitFor(); await p.getByText(/2 chave\(s\) guardada/).waitFor(); }],
     ["entrar", "entrar", async (p) => { await p.waitForTimeout(300); }],
     ...ABAS.map((a) => [`aba-${a}`, "normal", async (p) => { await p.evaluate((h) => { location.hash = `#/${h}`; }, a); await p.waitForTimeout(700); }]),
     ["menu-do-celular", "normal", async (p) => { const b = p.getByLabel("Abrir o menu"); if (!(await b.isVisible())) throw new Error("PULAR: sem menu nesta largura"); await b.click(); await p.waitForTimeout(400); }],

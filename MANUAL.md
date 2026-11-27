@@ -21,4 +21,5 @@ Uma linha por mudança que valha lembrar (a mais nova em cima). O Painel Dev tam
 
 | Data | O que mudou | Onde |
 | --- | --- | --- |
+| 2026-11-27 | Cartão "Backup das chaves dos APKs" na aba Cofre (gerar, copiar e restaurar; texto criptografado). Cenário `cofre-backup` no teste visual. | `apps/painel-dev/src/telas/Cofre.tsx`, `api.ts` |
 | 2026-11-27 | Manual criado | `MANUAL.md` |
