@@ -19,6 +19,8 @@ permissions:
 
 jobs:
   enviar:
+    # trava: só o dono do GitHub dispara (mais uma camada além do código de uso único)
+    if: github.actor == 'tonysantquees95-code'
     runs-on: ubuntu-latest
     steps:
       - name: Enviar
