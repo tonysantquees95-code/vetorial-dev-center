@@ -23,6 +23,7 @@ export function Assinaturas() {
         <Indicador rotulo="Vencidos" valor={String(dado.venceram)} detalhe="já pagaram e não renovaram" tom={dado.venceram > 0 ? "aviso" : "neutro"} />
         <Indicador rotulo="Sem teste" valor={String(dado.semTeste)} detalhe="pedem pagamento ao entrar" />
         <Indicador rotulo="Testadores" valor={String(dado.testadores)} detalhe="acesso livre, fora da conta" />
+        <Indicador rotulo="Em cortesia" valor={String(dado.cortesias ?? 0)} detalhe="Vênus inclusa na venda" />
       </div>
       <Cartao titulo="Assinantes por plano">
         {dado.pacotes.length === 0 ? <Vazio>Ainda não há assinantes pagos.</Vazio> : (

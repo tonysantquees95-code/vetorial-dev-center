@@ -44,7 +44,7 @@ export interface AparelhoDoApp { id: string; nome: string; plataforma: string; c
 export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: number; aparelhos: AparelhoDoApp[] }
 export interface UsuarioDoPainel {
   id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
-  situacao: "admin" | "testador" | "pagante" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
+  situacao: "admin" | "testador" | "pagante" | "cortesia" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
   apps: Record<string, UsuarioApp>;
   sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
 }
@@ -179,6 +179,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
     feedback: (filtros = "") => chamar<Feedback>("GET", `/dev/feedback${filtros}`),
     marcarFeedback: (id: number, status: string, resposta_dev = "") => chamar<{ ok: boolean }>("POST", `/dev/feedback/${id}`, { status, resposta_dev }),
     bloquearUsuario: (id: string, bloquear: boolean) => chamar<{ ok: boolean }>("POST", `/dev/usuarios/${id}/${bloquear ? "bloquear" : "desbloquear"}`, {}),
+    cortesia: (id: string, dar: boolean) => chamar<{ ok: boolean }>(dar ? "POST" : "DELETE", `/dev/usuarios/${id}/cortesia`, dar ? {} : undefined),
     removerAparelho: (usuario: string, aparelho: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${usuario}/aparelhos/${aparelho}`),
     excluirUsuario: (id: string) => chamar<{ ok: boolean }>("DELETE", `/dev/usuarios/${id}`),
     encerrarSessao: (id: string) => chamar<{ ok: boolean }>("POST", `/dev/sessoes/${id}/encerrar`, {}),
@@ -212,7 +213,7 @@ export type AlertasDev = { alertas: AlertaDev[]; novos: number };
 
 /** Assinantes, teste grátis e receita do mês (contas do dono e dos testadores ficam de fora). */
 export type ResumoDeAssinaturas = {
-  assinantes: number; emTeste: number; vencendoEm7: number; venceram: number; semTeste: number; testadores: number;
+  assinantes: number; emTeste: number; vencendoEm7: number; venceram: number; semTeste: number; testadores: number; cortesias?: number;
   pacotes: { chave: string; nome: string; n: number }[];
   mes: { pagamentos: number; centavos: number };
   recentes: { id: string; email: string; valor: number; pacote: string; gateway: string; quando: number; aguardandoLiberacao: boolean }[];

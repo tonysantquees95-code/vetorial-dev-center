@@ -3,13 +3,14 @@ import { ErroApi, type UsuarioDoPainel } from "../api";
 import { useApp } from "../estado";
 import { useBusca } from "../hooks";
 import { haQuanto } from "../logica";
-import { Aviso, BotaoConfirmar, Cartao, Carregando, Indicador, Selo, Vazio } from "../ui";
+import { Aviso, Botao, BotaoConfirmar, Cartao, Carregando, Indicador, Selo, Vazio } from "../ui";
 
 const NOME_DO_APP: Record<string, string> = { venus: "Vênus", vindex: "Vindex", vortex: "Vortex", vyntem: "Vyntem", velox: "Velox", drive: "Vetorial Drive", voxix: "Voxix" };
 const SITUACAO: Record<UsuarioDoPainel["situacao"], { rotulo: string; tom: "ok" | "aviso" | "neutro" }> = {
-  admin: { rotulo: "Administrador · ilimitado", tom: "ok" }, testador: { rotulo: "Testador · grátis sem prazo", tom: "ok" }, pagante: { rotulo: "Pagante", tom: "ok" }, teste: { rotulo: "Em teste grátis", tom: "aviso" }, gratis: { rotulo: "Só produtos grátis", tom: "neutro" },
+  admin: { rotulo: "Administrador · ilimitado", tom: "ok" }, testador: { rotulo: "Testador · grátis sem prazo", tom: "ok" }, pagante: { rotulo: "Pagante", tom: "ok" }, cortesia: { rotulo: "Cortesia da Vênus", tom: "ok" }, teste: { rotulo: "Em teste grátis", tom: "aviso" }, gratis: { rotulo: "Só produtos grátis", tom: "neutro" },
 };
-type Filtro = "todos" | "pagantes" | "teste" | "gratis" | "agora";
+type Filtro = "todos" | "pagantes" | "cortesia" | "teste" | "gratis" | "agora";
+const dataBR = (ms: number) => new Date(ms).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" });
 
 /** Quem usa os aplicativos: por pessoa, quantos aparelhos cadastrados e quantos em uso agora em cada app, e se paga ou só usa o que é grátis. */
 export function Usuarios() {
@@ -24,6 +25,7 @@ export function Usuarios() {
     return dado.usuarios.filter((u) => {
       if (b && !`${u.nome} ${u.email}`.toLowerCase().includes(b)) return false;
       if (filtro === "pagantes") return u.pagante;
+      if (filtro === "cortesia") return u.situacao === "cortesia";
       if (filtro === "teste") return u.situacao === "teste";
       if (filtro === "gratis") return u.situacao === "gratis";
       if (filtro === "agora") return u.sessoes.length > 0;
@@ -49,7 +51,11 @@ export function Usuarios() {
     setMsg("");
     try { await api.excluirUsuario(id); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
   }
-  const filtros: [Filtro, string][] = [["todos", `Todos (${dado.total})`], ["pagantes", `Pagantes (${dado.pagantes})`], ["teste", `Em teste (${dado.emTeste})`], ["gratis", `Só grátis (${dado.soGratis})`], ["agora", `Usando agora (${dado.usandoAgora})`]];
+  async function cortesia(id: string, dar: boolean) {
+    setMsg("");
+    try { await api.cortesia(id, dar); void recarregar(); } catch (e) { setMsg(e instanceof ErroApi ? e.message : "Não deu certo."); }
+  }
+  const filtros: [Filtro, string][] = [["todos", `Todos (${dado.total})`], ["pagantes", `Pagantes (${dado.pagantes})`], ["cortesia", `Cortesia (${dado.usuarios.filter((u) => u.situacao === "cortesia").length})`], ["teste", `Em teste (${dado.emTeste})`], ["gratis", `Só grátis (${dado.soGratis})`], ["agora", `Usando agora (${dado.usandoAgora})`]];
   return (
     <div className="space-y-4">
       {erro && <Aviso>{erro}</Aviso>}
@@ -65,12 +71,12 @@ export function Usuarios() {
       </div>
       <input className="min-h-11 w-full rounded-xl border border-borda bg-black/20 px-3 text-sm" placeholder="Buscar por nome ou e-mail" value={busca} onChange={(e) => setBusca(e.target.value)} />
       {lista.length === 0 && <Vazio>{dado.total === 0 ? "Nenhuma conta do Vetorial ID ainda." : "Nenhum usuário nesse filtro."}</Vazio>}
-      <div className="grid gap-3 lg:grid-cols-2">{lista.map((u) => <Usuario key={u.id} u={u} apps={dado.apps} aoEncerrar={encerrar} aoBloquear={bloquear} aoExcluir={excluir} aoRemoverAparelho={removerAparelho} />)}</div>
+      <div className="grid gap-3 lg:grid-cols-2">{lista.map((u) => <Usuario key={u.id} u={u} apps={dado.apps} aoEncerrar={encerrar} aoBloquear={bloquear} aoExcluir={excluir} aoRemoverAparelho={removerAparelho} aoCortesia={cortesia} />)}</div>
     </div>
   );
 }
 
-function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho }: { u: UsuarioDoPainel; apps: string[]; aoEncerrar: (id: string) => void; aoBloquear: (id: string, sim: boolean) => void; aoExcluir: (id: string) => void; aoRemoverAparelho: (usuario: string, aparelho: string) => void }) {
+function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho, aoCortesia }: { u: UsuarioDoPainel; apps: string[]; aoCortesia: (id: string, dar: boolean) => void; aoEncerrar: (id: string) => void; aoBloquear: (id: string, sim: boolean) => void; aoExcluir: (id: string) => void; aoRemoverAparelho: (usuario: string, aparelho: string) => void }) {
   const s = SITUACAO[u.situacao];
   const [aberto, setAberto] = useState<string | null>(null);
   const usados = apps.flatMap((a) => { const x = u.apps[a]; return x ? [{ a, x }] : []; });
@@ -113,6 +119,21 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho
           ))}
         </ul>
       )}
+      {!u.admin && u.situacao !== "testador" && u.situacao !== "pagante" && (
+        <div className="mt-3 space-y-2 border-t border-borda pt-3">
+          {u.situacao === "cortesia" ? (
+            <>
+              <p className="num text-sm text-ok">Vênus liberada até {dataBR(u.ativoAte)}</p>
+              <BotaoConfirmar rotulo="Retirar cortesia" confirmacao="Confirmar retirada" aoConfirmar={() => aoCortesia(u.id, false)} />
+            </>
+          ) : (
+            <>
+              <p className="break-all text-xs text-suave">Depois de receber o pagamento, libere a Vênus para <span className="text-texto">{u.email}</span>. Uma vez por conta, sem cobrança automática.</p>
+              <BotaoLiberar aoConfirmar={() => aoCortesia(u.id, true)} />
+            </>
+          )}
+        </div>
+      )}
       {!u.admin && (
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-borda pt-3">
           {u.bloqueado
@@ -123,4 +144,15 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho
       )}
     </Cartao>
   );
+}
+
+/** Liberar não é ação de perigo: botão comum, mas sempre com um segundo toque. */
+function BotaoLiberar({ aoConfirmar }: { aoConfirmar: () => void }) {
+  const [pedindo, setPedindo] = useState(false);
+  return pedindo ? (
+    <div className="flex flex-wrap items-center gap-2">
+      <Botao variante="primario" onClick={() => { setPedindo(false); aoConfirmar(); }}>Confirmar 60 dias</Botao>
+      <Botao onClick={() => setPedindo(false)}>Cancelar</Botao>
+    </div>
+  ) : <Botao onClick={() => setPedindo(true)}>Liberar 60 dias de Vênus</Botao>;
 }
