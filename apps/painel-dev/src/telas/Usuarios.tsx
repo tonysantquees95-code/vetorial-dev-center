@@ -119,6 +119,7 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho
           ))}
         </ul>
       )}
+      {u.liberacao && <PosVenda liberacao={u.liberacao} />}
       {!u.admin && u.situacao !== "testador" && u.situacao !== "pagante" && (
         <div className="mt-3 space-y-2 border-t border-borda pt-3">
           {u.situacao === "cortesia" ? (
@@ -143,6 +144,34 @@ function Usuario({ u, apps, aoEncerrar, aoBloquear, aoExcluir, aoRemoverAparelho
         </div>
       )}
     </Cartao>
+  );
+}
+
+/** Quando o lojista assinou e as três mensagens do roteiro, com a data de cada uma. Quem envia é a pessoa. */
+function PosVenda({ liberacao }: { liberacao: NonNullable<UsuarioDoPainel["liberacao"]> }) {
+  const [copiada, setCopiada] = useState<number | null>(null);
+  const [falhou, setFalhou] = useState(false);
+  const agora = Date.now();
+  async function copiar(dia: number, texto: string) {
+    try { await navigator.clipboard.writeText(texto); setCopiada(dia); setFalhou(false); } catch { setFalhou(true); }
+  }
+  return (
+    <div className="mt-3 space-y-2 border-t border-borda pt-3">
+      <p className="num text-sm">Assinou em {dataBR(liberacao.inicio)} · 60 dias até {dataBR(liberacao.fim)}</p>
+      <details>
+        <summary className="min-h-10 cursor-pointer py-2 text-sm text-neon">Mensagens de acompanhamento</summary>
+        <ul className="space-y-2">
+          {liberacao.mensagens.map((m) => (
+            <li key={m.dia} className="space-y-2 rounded-xl border border-borda bg-white/3 p-3">
+              <div className="flex flex-wrap items-center gap-2 text-sm font-medium">{m.rotulo}<Selo tom={agora >= m.quando ? "aviso" : "neutro"}>{agora >= m.quando ? `Desde ${dataBR(m.quando)}` : `Enviar em ${dataBR(m.quando)}`}</Selo></div>
+              <p className="select-text text-xs text-suave">{m.texto}</p>
+              <Botao className="min-h-9 px-3 text-xs" onClick={() => void copiar(m.dia, m.texto)}>{copiada === m.dia ? "Copiada" : "Copiar mensagem"}</Botao>
+            </li>
+          ))}
+        </ul>
+        {falhou && <p className="mt-2 text-xs text-suave" role="status">Não deu para copiar. Segure o dedo no texto para selecionar.</p>}
+      </details>
+    </div>
   );
 }
 

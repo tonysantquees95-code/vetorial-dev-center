@@ -21,6 +21,7 @@ Uma linha por mudança que valha lembrar (a mais nova em cima). O Painel Dev tam
 
 | Data | O que mudou | Onde |
 | --- | --- | --- |
+| 28/11/2026 | Em Usuários: data em que o lojista assinou e mensagens de acompanhamento para copiar; aviso "Pós-venda" na faixa de avisos | `apps/painel-dev/src/telas/Usuarios.tsx` |
 | 2026-11-28 | Botão "Liberar 60 dias de Vênus" em Usuários (busque o e-mail do lojista), filtro Cortesia e indicador "Em cortesia" em Assinaturas. | `apps/painel-dev/src/telas/Usuarios.tsx`, `Assinaturas.tsx`, `api.ts` |
 | 2026-11-27 | Cartão "Backup das chaves dos APKs" na aba Cofre (gerar, copiar e restaurar; texto criptografado). Cenário `cofre-backup` no teste visual. | `apps/painel-dev/src/telas/Cofre.tsx`, `api.ts` |
 | 2026-11-27 | Manual criado | `MANUAL.md` |

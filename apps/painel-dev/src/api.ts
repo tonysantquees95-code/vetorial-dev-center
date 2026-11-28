@@ -45,6 +45,7 @@ export interface UsuarioApp { dispositivos: number; ativas: number; ultimo: numb
 export interface UsuarioDoPainel {
   id: string; email: string; nome: string; telefone: string; criado: number; recuperacao: boolean;
   situacao: "admin" | "testador" | "pagante" | "cortesia" | "teste" | "gratis"; admin: boolean; bloqueado: boolean; pagante: boolean; pacote: string; ativoAte: number;
+  liberacao?: { inicio: number; fim: number; mensagens: { dia: number; rotulo: string; quando: number; texto: string }[] } | null;
   apps: Record<string, UsuarioApp>;
   sessoes: { sessao: string; app: string; nome: string; plataforma: string; ultimoPing: number }[];
 }
@@ -208,7 +209,7 @@ export function criarCliente(base: () => string, token: () => string, aoNegar: (
 export type Cliente = ReturnType<typeof criarCliente>;
 
 /** Avisos do Painel: build quebrado, erro relatado e erro em alta. */
-export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download" | "pagamento" | "cobranca"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
+export type AlertaDev = { id: number; criado: number; tipo: "build" | "relato" | "alta" | "cadastro" | "download" | "pagamento" | "cobranca" | "acompanhamento"; app: string; titulo: string; detalhe: string; status: "novo" | "visto" | "resolvido" };
 export type AlertasDev = { alertas: AlertaDev[]; novos: number };
 
 /** Assinantes, teste grátis e receita do mês (contas do dono e dos testadores ficam de fora). */

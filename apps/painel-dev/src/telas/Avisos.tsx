@@ -4,8 +4,8 @@ import { useApp } from "../estado";
 import { haQuanto } from "../logica";
 import { Botao, Selo } from "../ui";
 
-const TOM = { build: "erro", relato: "aviso", alta: "erro", cadastro: "ok", download: "ok", pagamento: "ok", cobranca: "erro" } as const;
-const NOME = { build: "Build", relato: "Erro relatado", alta: "Erro em alta", cadastro: "Novo usuário", download: "Download", pagamento: "Pagamento", cobranca: "Cobrança" } as const;
+const TOM = { build: "erro", relato: "aviso", alta: "erro", cadastro: "ok", download: "ok", pagamento: "ok", cobranca: "erro", acompanhamento: "aviso" } as const;
+const NOME = { build: "Build", relato: "Erro relatado", alta: "Erro em alta", cadastro: "Novo usuário", download: "Download", pagamento: "Pagamento", cobranca: "Cobrança", acompanhamento: "Pós-venda" } as const;
 
 /** Faixa no alto do painel: build quebrado, erro relatado nos apps, erro em alta, novo cadastro e download de app. Confere a cada minuto com o painel aberto. */
 export function FaixaDeAvisos() {
